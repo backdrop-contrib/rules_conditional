@@ -5,10 +5,68 @@
  */
 
 /**
+ * Base conditional statement plugin implementation.
+ */
+abstract class RulesConditionalPlugin extends RulesContainerPlugin {
+  /**
+   * Evaluates the conditional statement.
+   */
+  public function evaluate(RulesState $state) {
+    // TODO: Implement evaluate() method.
+  }
+}
+
+/**
+ * Base conditional branch plugin implementation, to be contained within a
+ * RulesConditionalPlugin.
+ */
+abstract class RulesConditionalBranchPlugin extends RulesPlugin {
+  /**
+   * Evaluates the conditional statement.
+   */
+  public function evaluate(RulesState $state) {
+    // TODO: Implement evaluate() method.
+  }
+
+  /**
+   * Execute the configuration by passing arguments in a single array.
+   */
+  public function executeByArgs($args = array()) {
+    // TODO: Implement executeByArgs() method.
+  }
+
+  /**
+   * Evaluates the branch condition to determine an execution state.
+   */
+  abstract public function evaluateCondition(RulesState $state);
+}
+
+/**
+ * Default if-else conditional statement.
+ */
+class RulesConditional extends RulesConditionalPlugin {
+  // TODO
+}
+
+/**
  * Embedded rule.
  */
-class RulesConditionalIf extends RulesActionContainer {
+class RulesConditionalIf extends RulesConditionalBranchPlugin {
   protected $itemName = 'if';
+
+  /**
+   * Creates an instance of the 'if' element.
+   */
+  public function __construct() {
+    parent::__construct();
+  }
+
+  /**
+   * Evaluates the condition.
+   */
+  public function evaluateCondition(RulesState $state) {
+    // TODO: Implement evaluate() method.
+  }
 }
 
 /**
