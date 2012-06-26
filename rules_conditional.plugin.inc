@@ -95,7 +95,7 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
   /**
    * Determines whether this branch can be evaluated.
    */
-  abstract public function isEvaluable(RulesState $state);
+  abstract public function canEvaluate(RulesState $state);
 
   /**
    * Gets the previous sibling element.
@@ -169,7 +169,7 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
   /**
    * Determines whether this branch can be evaluated.
    */
-  public function isEvaluable(RulesState $state) {
+  public function canEvaluate(RulesState $state) {
     return $this->evaluateCondition($state);
   }
 
@@ -202,7 +202,7 @@ class RulesConditionalElse extends RulesConditionalBranchPlugin {
   /**
    * Determines whether this branch can be evaluated.
    */
-  public function isEvaluable(RulesState $state) {
+  public function canEvaluate(RulesState $state) {
     return TRUE;
   }
 }
@@ -240,8 +240,8 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
   /**
    * Determines whether this branch can be evaluated.
    */
-  public function isEvaluable(RulesState $state) {
-    // TODO: Implement isEvaluable() method.
+  public function canEvaluate(RulesState $state) {
+    // TODO: Implement canEvaluate() method.
   }
 }
 
@@ -254,7 +254,7 @@ class RulesConditionalDefaultCase extends RulesConditionalCase {
   /**
    * Determines whether this branch can be evaluated.
    */
-  public function isEvaluable(RulesState $state) {
+  public function canEvaluate(RulesState $state) {
     return TRUE;
   }
 }
