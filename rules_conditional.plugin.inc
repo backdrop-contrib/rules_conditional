@@ -92,13 +92,6 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
     // TODO: Implement evaluate() method.
   }
 
-  /**
-   * Execute the configuration by passing arguments in a single array.
-   */
-  public function executeByArgs($args = array()) {
-    // TODO: Implement executeByArgs() method.
-  }
-
   // TODO Implement sibling lookup methods.
 }
 
