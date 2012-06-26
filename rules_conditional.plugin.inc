@@ -12,7 +12,11 @@ abstract class RulesConditionalPlugin extends RulesContainerPlugin {
    * Evaluates the conditional statement.
    */
   public function evaluate(RulesState $state) {
-    // TODO: Implement evaluate() method.
+    // Evaluate selected branches.
+    $branches = $this->selectBranches($state);
+    foreach ($branches as $branch) {
+      $branch->evaluate($state);
+    }
   }
 
   /**
@@ -38,8 +42,8 @@ abstract class RulesConditionalPlugin extends RulesContainerPlugin {
    *
    * @param RulesState $state
    *   Rules state to use.
-   * @return array
-   *   An array element ids to evaluate.
+   * @return RulesConditionalBranchPlugin[]
+   *   An array of branches to evaluate.
    */
   abstract public function selectBranches(RulesState $state);
 }
@@ -108,7 +112,7 @@ class RulesConditional extends RulesConditionalPlugin {
    * @param RulesState $state
    *   Rules state to use.
    * @return array
-   *   An array element ids to evaluate.
+   *   An array of branches to evaluate.
    */
   public function selectBranches(RulesState $state) {
     // TODO: Implement selectBranches() method.
@@ -179,7 +183,7 @@ class RulesConditionalSwitch extends RulesConditionalPlugin {
    * @param RulesState $state
    *   Rules state to use.
    * @return array
-   *   An array element ids to evaluate.
+   *   An array of branches to evaluate.
    */
   public function selectBranches(RulesState $state) {
     // TODO: Implement selectBranches() method.
