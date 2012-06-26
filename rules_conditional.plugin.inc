@@ -20,6 +20,13 @@ abstract class RulesConditionalPlugin extends RulesContainerPlugin {
   }
 
   /**
+   * Asserts no variables (since a conditional is *conditionally* evaluated).
+   */
+  protected function variableInfoAssertions() {
+    return array();
+  }
+
+  /**
    * Adds a branch element.
    */
   public function addBranch(RulesConditionalBranchPlugin $branch) {
