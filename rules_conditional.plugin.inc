@@ -111,7 +111,7 @@ class RulesConditional extends RulesConditionalPlugin {
    *
    * @param RulesState $state
    *   Rules state to use.
-   * @return array
+   * @return RulesConditionalBranchPlugin[]
    *   An array of branches to evaluate.
    */
   public function selectBranches(RulesState $state) {
@@ -182,7 +182,7 @@ class RulesConditionalSwitch extends RulesConditionalPlugin {
    *
    * @param RulesState $state
    *   Rules state to use.
-   * @return array
+   * @return RulesConditionalBranchPlugin[]
    *   An array of branches to evaluate.
    */
   public function selectBranches(RulesState $state) {
