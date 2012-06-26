@@ -97,13 +97,6 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
    */
   abstract public function isEvaluable(RulesState $state);
 
-  /**
-   * Evaluates the conditional statement.
-   */
-  public function evaluate(RulesState $state) {
-    // TODO: Implement evaluate() method.
-  }
-
   // TODO Implement sibling lookup methods.
 }
 
