@@ -1,0 +1,7 @@
+name = Rules Conditional
+description = Provides conditional control elements within action containers.
+core = 7.x
+dependencies[] = rules
+package = Rules
+files[] = rules_conditional.plugin.inc
+files[] = rules_conditional.ui.inc
