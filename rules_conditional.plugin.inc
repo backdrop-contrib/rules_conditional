@@ -7,7 +7,7 @@
 /**
  * Base conditional statement plugin implementation.
  */
-abstract class RulesConditionalPlugin extends RulesContainerPlugin {
+abstract class RulesConditionalPlugin extends RulesContainerPlugin implements RulesActionInterface {
   /**
    * Evaluates the conditional statement.
    */
