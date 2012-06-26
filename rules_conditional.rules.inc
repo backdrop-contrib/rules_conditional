@@ -15,7 +15,7 @@ function rules_conditional_rules_plugin_info() {
     ),
     'if' => array(
       'class' => 'RulesConditionalIf',
-      'embeddable' => 'RulesConditionalBranchContainer',
+      'embeddable' => 'RulesConditional',
       'extenders' => array(
         'RulesPluginUIInterface' => array(
           'class' => 'RulesConditionalAntecedentUI',
@@ -39,9 +39,13 @@ function rules_conditional_rules_plugin_info() {
       'class' => 'RulesConditionalSwitch',
       'embeddable' => 'RulesActionContainer',
     ),
-    'when' => array(
+    'case' => array(
       'class' => 'RulesConditionalCase',
-      'embeddable' => 'RulesActionContainer',
+      'embeddable' => 'RulesConditionalSwitch',
+    ),
+    'default case' => array(
+      'class' => 'RulesConditionalDefaultCase',
+      'embeddable' => 'RulesConditionalSwitch',
     ),
   );
 }
