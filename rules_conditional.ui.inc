@@ -21,7 +21,6 @@ class RulesConditionalAntecedentUI extends RulesRuleUI {
 
   public function addOperations() {
     $ops = parent::addOperations();
-    dpm($ops);
     return $ops;
   }
 }
