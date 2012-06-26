@@ -97,7 +97,43 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
    */
   abstract public function isEvaluable(RulesState $state);
 
-  // TODO Implement sibling lookup methods.
+  /**
+   * Gets the previous sibling element.
+   *
+   * @return RulesPlugin
+   */
+  public function getPreviousSibling() {
+    if (isset($this->parent)) {
+      $previous = NULL;
+      foreach ($this->parent->getIterator() as $element) {
+        if ($element === $this) {
+          return $previous;
+        }
+        $previous = $element;
+      }
+    }
+    // Otherwise, return nothing if no previous sibling is applicable.
+    return NULL;
+  }
+
+  /**
+   * Gets the next sibling element.
+   *
+   * @return RulesPlugin
+   */
+  public function getNextSibling() {
+    if (isset($this->parent)) {
+      $previous = NULL;
+      foreach ($this->parent->getIterator() as $element) {
+        if ($previous === $this) {
+          return $element;
+        }
+        $previous = $element;
+      }
+    }
+    // Otherwise, return nothing if no next sibling is applicable.
+    return NULL;
+  }
 }
 
 /**
