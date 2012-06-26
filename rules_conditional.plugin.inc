@@ -75,7 +75,8 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
       $this->parent->removeBranch($this);
     }
     // Check parent class against the compatible class.
-    if ($parent instanceof $this->getCompatibleConditionalClass()) {
+    $compatibleClass = $this->getCompatibleConditionalClass();
+    if ($parent instanceof $compatibleClass) {
       $this->parent = $parent;
       $this->parent->addBranch($this);
     }
