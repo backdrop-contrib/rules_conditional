@@ -66,6 +66,7 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
     // Check parent class against the compatible class.
     if ($parent instanceof $this->getCompatibleConditionalClass()) {
       $this->parent = $parent;
+      $this->parent->addBranch($this);
     }
     else {
       throw new RulesEvaluationException('This branch element is incompatible with the given conditional.', array(), $this, RulesLog::ERROR);
