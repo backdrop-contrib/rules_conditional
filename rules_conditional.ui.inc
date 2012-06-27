@@ -5,9 +5,24 @@
  */
 
 /**
+ * Base UI for providing customized operation links.
+ */
+class RulesConditionalPluginUI extends RulesContainerPluginUI {
+  public function operations() {
+    $ops = parent::operations();
+    foreach (rules_fetch_data('plugin_info') as $plugin => $info) {
+      if (!empty($info['conditional predicate']) && isset($ops['#links']['add_' . $plugin])) {
+        $ops['#links']['add_' . $plugin]['href'] = RulesPluginUI::path($this->element->root()->name, 'add-predicate', $this->element, $plugin);
+      }
+    }
+    return $ops;
+  }
+}
+
+/**
  * Empty UI for doing nothing with the plugin.
  */
-class RulesConditionalEmptyUI extends RulesContainerPluginUI {
+class RulesConditionalEmptyUI extends RulesConditionalPluginUI {
   public function form(&$form, &$form_state, $options = array()) {
     // Save element.
     $this->element->save();
@@ -31,47 +46,45 @@ class RulesConditionalEmptyUI extends RulesContainerPluginUI {
  */
 class RulesConditionalPredicateUI extends RulesContainerPluginUI {
   /**
-   * Hides the actions form.
+   * Delegates the form to the predicate.
    */
   public function form(&$form, &$form_state, $options = array()) {
-    // Add label.
-    $form['label'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Name'),
-      '#default_value' => empty($options['init']) ? $this->property('label') : '',
-      '#required' => TRUE,
-      '#description' => t('A user-friendly short description of the conditions for this "@plugin".', array('@plugin' => $this->element->plugin())),
-    );
+    drupal_set_title(rules_get_title('Editing !label', $this->element));
+    /** @var $predicate RulesPlugin */
+    $predicate = $this->property('predicate');
+    if (!is_object($predicate) || $predicate instanceof RulesContainerPlugin) {
+      // TODO: Find out how to eventually nest a conditional container UI.
+      return;
+    }
     // Build form for predicate.
-    $this->property('predicate')->form($form, $form_state);
-    $form['elements']['#access'] = empty($options['init']);
-    $form['negate']['#access'] = empty($options['init']);
-    // Store state for redirecting when initializing.
-    if (!empty($options['button'])) {
-      $form['submit'] = array(
-        '#type' => 'submit',
-        '#value' => !empty($options['init']) ? t('Continue') : t('Save changes'),
-        '#weight' => 10,
-        '#options_init' => !empty($options['init']),
-      );
-    }
+    $predicate->form($form, $form_state, $options);
   }
 
-  public function form_extract_values($form, &$form_state) {
-    $form_values = RulesPluginUI::getFormStateValues($form, $form_state);
-    if (!empty($form_values['label'])) {
-      $label = &$this->property('label');
-      $label = $form_values['label'];
+  /**
+   * Delegates the form validator to the predicate.
+   */
+  public function form_validate($form, &$form_state) {
+    /** @var $predicate RulesPlugin */
+    $predicate = $this->property('predicate');
+    if (!is_object($predicate) || $predicate instanceof RulesContainerPlugin) {
+      // TODO: Find out how to eventually nest a conditional container UI.
+      return;
     }
-    $this->property('predicate')->extender('RulesConditionContainerUI')->form_extract_values($form, $form_state);
-    if (!empty($form_state['triggering_element']['#options_init'])) {
-      $redirect = RulesPluginUI::path($this->element->root()->name, 'edit', $this->element);
-      $form_state['redirect'] = $redirect;
-    }
+    // Validate form for predicate.
+    $predicate->form_validate($form, $form_state);
   }
 
-  public function addOperations() {
-    $ops = parent::addOperations();
-    return $ops;
+  /**
+   * Delegates the form submit handler to the predicate.
+   */
+  public function form_submit($form, &$form_state) {
+    /** @var $predicate RulesPlugin */
+    $predicate = $this->property('predicate');
+    if (!is_object($predicate) || $predicate instanceof RulesContainerPlugin) {
+      // TODO: Find out how to eventually nest a conditional container UI.
+      return;
+    }
+    // Handle form submission for predicate.
+    $predicate->form_submit($form, $form_state);
   }
 }
