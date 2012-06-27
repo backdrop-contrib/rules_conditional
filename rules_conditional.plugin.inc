@@ -175,17 +175,29 @@ class RulesConditional extends RulesConditionalPlugin {
 class RulesConditionalIf extends RulesConditionalBranchPlugin {
   protected $itemName = 'if';
 
-  protected $label;
   protected $predicate;
 
-  public function __construct() {
+  public function __construct($predicate = NULL, $settings = array()) {
     parent::__construct();
-    $this->predicate = rules_and();
-    $this->predicate->parent = $this;
+    if (isset($predicate)) {
+      $this->predicate = is_object($predicate) && $predicate instanceof RulesConditionInterface ? $predicate : rules_condition($predicate, $settings);
+      $this->predicate->parent = $this;
+    }
+  }
+
+  protected function setUp() {
+    parent::setUp();
+    if (isset($this->predicate)) {
+      // Use predicate settings as the branch's own.
+      $this->settings = $this->predicate->settings;
+    }
   }
 
   public function __sleep() {
-    return parent::__sleep() + drupal_map_assoc(array('predicate', 'label'));
+    $array = parent::__sleep();
+    $array['predicate'] = 'predicate';
+    unset($array['settings']);
+    return $array;
   }
 
   public function getCompatibleConditionalClass() {
@@ -194,8 +206,26 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
 
   public function label() {
     $pluginLabel = parent::label();
-    $label = !$this->predicate->isNegated() ? '@plugin "@predicate_label"' : '@plugin NOT "@predicate_label"';
-    return t($label, array('@plugin' => $pluginLabel, '@predicate_label' => $this->label));
+    if (!isset($this->predicate)) {
+      return $pluginLabel;
+    }
+    else {
+      $label = !$this->predicate->isNegated() ? '@plugin "@predicate_label"' : '@plugin NOT "@predicate_label"';
+      return t($label, array('@plugin' => $pluginLabel, '@predicate_label' => $this->predicate->label()));
+    }
+  }
+
+  /**
+   * Uses predicate parameters as the branch's own.
+   */
+  public function pluginParameterInfo() {
+    $this->forceSetUp();
+    if (isset($this->predicate)) {
+      return $this->predicate->pluginParameterInfo();
+    }
+    else {
+      return parent::pluginParameterInfo();
+    }
   }
 
   /**
