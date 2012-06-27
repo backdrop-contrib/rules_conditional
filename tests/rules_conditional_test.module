@@ -10,6 +10,7 @@
 function rules_conditional_test_rules_plugin_info() {
   return array(
     'test_conditional' => array(
+      'label' => t('Test conditional'),
       'class' => 'RulesConditionalTestPlugin',
       'embeddable' => 'RulesActionContainer',
       'extenders' => array(
@@ -17,6 +18,7 @@ function rules_conditional_test_rules_plugin_info() {
       ),
     ),
     'test_conditional_branch' => array(
+      'label' => t('Test conditional branch'),
       'class' => 'RulesConditionalTestBranchPlugin',
       'embeddable' => 'RulesActionContainer',
       'extenders' => array(
