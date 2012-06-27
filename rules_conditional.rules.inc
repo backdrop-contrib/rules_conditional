@@ -25,7 +25,7 @@ function rules_conditional_rules_plugin_info() {
       'embeddable' => 'RulesConditional',
       'extenders' => array(
         'RulesPluginUIInterface' => array(
-          'class' => 'RulesConditionalAntecedentUI',
+          'class' => 'RulesConditionalPredicateUI',
         ),
       ),
     ),
@@ -35,7 +35,7 @@ function rules_conditional_rules_plugin_info() {
       'embeddable' => 'RulesConditional',
       'extenders' => array(
         'RulesPluginUIInterface' => array(
-          'class' => 'RulesConditionalAntecedentUI',
+          'class' => 'RulesConditionalPredicateUI',
         ),
       ),
     ),

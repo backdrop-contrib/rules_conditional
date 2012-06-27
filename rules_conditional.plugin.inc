@@ -175,8 +175,27 @@ class RulesConditional extends RulesConditionalPlugin {
 class RulesConditionalIf extends RulesConditionalBranchPlugin {
   protected $itemName = 'if';
 
+  protected $label;
+  protected $predicate;
+
+  public function __construct() {
+    parent::__construct();
+    $this->predicate = rules_and();
+    $this->predicate->parent = $this;
+  }
+
+  public function __sleep() {
+    return parent::__sleep() + drupal_map_assoc(array('predicate', 'label'));
+  }
+
   public function getCompatibleConditionalClass() {
     return 'RulesConditional';
+  }
+
+  public function label() {
+    $pluginLabel = parent::label();
+    $label = !$this->predicate->isNegated() ? '@plugin "@predicate_label"' : '@plugin NOT "@predicate_label"';
+    return t($label, array('@plugin' => $pluginLabel, '@predicate_label' => $this->label));
   }
 
   /**
@@ -190,8 +209,7 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
    * Evaluates the condition.
    */
   public function evaluateCondition(RulesState $state) {
-    // TODO: Implement evaluate() method.
-    return FALSE;
+    return $this->predicate->evaluate($state);
   }
 }
 
