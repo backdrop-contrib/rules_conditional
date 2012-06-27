@@ -7,8 +7,8 @@
 /**
  * Test base conditional.
  */
-class RulesConditionalTestPlugin extends RulesConditionalPlugin {
-  protected $itemName = 'test_conditional';
+class RulesConditionalTestStubPlugin extends RulesConditionalPlugin {
+  protected $itemName = 'stub conditional';
 
   /**
    * Selects the branches to evaluate for this conditional.
@@ -26,8 +26,8 @@ class RulesConditionalTestPlugin extends RulesConditionalPlugin {
 /**
  * Test branch.
  */
-class RulesConditionalTestBranchPlugin extends RulesConditionalBranchPlugin {
-  protected $itemName = 'test_conditional_branch';
+class RulesConditionalTestStubBranchPlugin extends RulesConditionalBranchPlugin {
+  protected $itemName = 'stub conditional branch';
 
   /**
    * Determines whether this branch can be evaluated.

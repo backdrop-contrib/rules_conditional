@@ -9,9 +9,9 @@
  */
 function rules_conditional_test_rules_plugin_info() {
   return array(
-    'test_conditional' => array(
-      'label' => t('Test conditional'),
-      'class' => 'RulesConditionalTestPlugin',
+    'stub conditional' => array(
+      'label' => 'Stub conditional',
+      'class' => 'RulesConditionalTestStubPlugin',
       'embeddable' => 'RulesActionContainer',
       'extenders' => array(
         'RulesPluginUIInterface' => array(
@@ -19,9 +19,9 @@ function rules_conditional_test_rules_plugin_info() {
         ),
       ),
     ),
-    'test_conditional_branch' => array(
-      'label' => t('Test conditional branch'),
-      'class' => 'RulesConditionalTestBranchPlugin',
+    'stub conditional branch' => array(
+      'label' => 'Stub conditional branch',
+      'class' => 'RulesConditionalTestStubBranchPlugin',
       'embeddable' => 'RulesActionContainer',
       'extenders' => array(
         'RulesPluginUIInterface' => array(
