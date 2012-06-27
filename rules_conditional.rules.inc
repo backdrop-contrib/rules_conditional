@@ -57,7 +57,7 @@ function rules_conditional_rules_plugin_info() {
       'embeddable' => 'RulesActionContainer',
       'extenders' => array(
         'RulesPluginUIInterface' => array(
-          'class' => 'RulesPluginUI',
+          'class' => 'RulesConditionalEmptyUI',
         ),
       ),
     ),
