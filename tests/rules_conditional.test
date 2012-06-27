@@ -89,6 +89,29 @@ class RulesConditionalFrameworkTestCase extends DrupalWebTestCase {
       $this->assert(TRUE, $message);
     }
   }
+
+  /**
+   * Tests branch sibling methods.
+   */
+  public function testBranchSibling() {
+    // Set up stub objects.
+    $conditional = new RulesConditionalTestStubPlugin();
+    $branch1 = new RulesConditionalTestStubBranchPlugin();
+    $branch1->setParent($conditional);
+    $branch2 = new RulesConditionalTestStubBranchPlugin();
+    $branch2->setParent($conditional);
+    $orphanBranch = new RulesConditionalTestStubBranchPlugin();
+
+    // Test obtaining siblings.
+    $this->assertIdentical($branch2, $branch1->getNextSibling(), 'Next sibling branch can be obtained.');
+    $this->assertIdentical($branch1, $branch2->getPreviousSibling(), 'Previous sibling branch can be obtained.');
+    $this->assertNull($branch1->getPreviousSibling(), 'First branch has no previous sibling.');
+    $this->assertNull($branch2->getNextSibling(), 'Last branch has no next sibling.');
+
+    // Test obtaining siblings from an orphan element.
+    $this->assertNull($orphanBranch->getNextSibling(), 'Orphan branch has no next sibling.');
+    $this->assertNull($orphanBranch->getPreviousSibling(), 'Orphan branch has no previous sibling.');
+  }
 }
 
 /**
