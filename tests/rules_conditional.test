@@ -18,6 +18,13 @@ class RulesConditionalFrameworkTestCase extends DrupalWebTestCase {
       'group' => 'Conditional Rules',
     );
   }
+
+  /**
+   * Sets up test case.
+   */
+  protected function setUp() {
+    parent::setUp('rules_conditional_test');
+  }
 }
 
 /**
@@ -65,5 +72,12 @@ class RulesConditionalUITestCase extends DrupalWebTestCase {
       'description' => 'Test the user interface implementations for conditional plugins.',
       'group' => 'Conditional Rules',
     );
+  }
+
+  /**
+   * Sets up test case.
+   */
+  protected function setUp() {
+    parent::setUp('rules_conditional_test');
   }
 }

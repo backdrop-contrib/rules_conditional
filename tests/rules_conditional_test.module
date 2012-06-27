@@ -1,0 +1,13 @@
+<?php
+/**
+ * @file
+ * Testing module.
+ */
+
+/**
+ * Implements hook_rules_plugin_info().
+ */
+function rules_conditional_test_rules_plugin_info() {
+  // TODO
+  return array();
+}
