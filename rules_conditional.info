@@ -5,3 +5,4 @@ dependencies[] = rules
 package = Rules
 files[] = rules_conditional.plugin.inc
 files[] = rules_conditional.ui.inc
+files[] = tests/rules_conditional.test
