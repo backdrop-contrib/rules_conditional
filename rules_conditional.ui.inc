@@ -7,7 +7,7 @@
 /**
  * Empty UI for doing nothing with the plugin.
  */
-class RulesConditionalEmptyUI extends RulesPluginUI {
+class RulesConditionalEmptyUI extends RulesContainerPluginUI {
   public function form(&$form, &$form_state, $options = array()) {
     // Save element.
     $this->element->save();
@@ -29,7 +29,7 @@ class RulesConditionalEmptyUI extends RulesPluginUI {
 /**
  * UI for configuring the propositional antecedent in a conditional element.
  */
-class RulesConditionalAntecedentUI extends RulesRuleUI {
+class RulesConditionalAntecedentUI extends RulesContainerPluginUI {
   /**
    * Hides the actions form.
    */
