@@ -78,6 +78,6 @@ class RulesConditionalUITestCase extends DrupalWebTestCase {
    * Sets up test case.
    */
   protected function setUp() {
-    parent::setUp('rules_conditional_test');
+    parent::setUp('rules_conditional_test', 'rules_admin');
   }
 }
