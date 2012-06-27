@@ -58,7 +58,7 @@ abstract class RulesConditionalPlugin extends RulesContainerPlugin implements Ru
    * @return RulesConditionalBranchPlugin[]
    *   An array of branches to evaluate.
    */
-  abstract public function selectBranches(RulesState $state);
+  abstract protected function selectBranches(RulesState $state);
 }
 
 /**
@@ -163,7 +163,7 @@ class RulesConditional extends RulesConditionalPlugin {
    * @return RulesConditionalBranchPlugin[]
    *   An array of branches to evaluate.
    */
-  public function selectBranches(RulesState $state) {
+  protected function selectBranches(RulesState $state) {
     // TODO: Implement selectBranches() method.
     return array();
   }
@@ -234,7 +234,7 @@ class RulesConditionalSwitch extends RulesConditionalPlugin {
    * @return RulesConditionalBranchPlugin[]
    *   An array of branches to evaluate.
    */
-  public function selectBranches(RulesState $state) {
+  protected function selectBranches(RulesState $state) {
     // TODO: Implement selectBranches() method.
     return array();
   }
