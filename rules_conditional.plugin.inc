@@ -8,6 +8,12 @@
  * Base conditional statement plugin implementation.
  */
 abstract class RulesConditionalPlugin extends RulesContainerPlugin implements RulesActionInterface {
+  public function label() {
+    $plugin = $this->plugin();
+    $label = drupal_strtoupper(drupal_substr($plugin, 0, 1)) . drupal_substr($plugin, 1);
+    return $label;
+  }
+
   /**
    * Evaluates the conditional statement.
    */
@@ -65,6 +71,12 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
    * @var RulesConditionalPlugin
    */
   protected $parent = NULL;
+
+  public function label() {
+    $plugin = $this->plugin();
+    $label = drupal_strtoupper(drupal_substr($plugin, 0, 1)) . drupal_substr($plugin, 1);
+    return $label;
+  }
 
   public function setParent(RulesContainerPlugin $parent) {
     if ($this->parent == $parent) {
