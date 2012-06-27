@@ -57,6 +57,38 @@ class RulesConditionalFrameworkTestCase extends DrupalWebTestCase {
     $conditional->removeBranch($branch);
     $this->assertEqual(0, count($conditional->getIterator()), 'Branch can be removed from conditional.');
   }
+
+  /**
+   * Tests setting a conditional as the parent of a branch.
+   */
+  public function testBranchSetParent() {
+    // Set up stub objects.
+    $conditional = new RulesConditionalTestStubPlugin();
+    $branch = new RulesConditionalTestStubBranchPlugin();
+
+    // Set conditional as parent of branch.
+    $branch->setParent($conditional);
+    $this->assertIdentical($conditional, $branch->parentElement(), 'Conditional can be set as parent of branch.');
+    $iterator = $conditional->getIterator();
+    $this->assertTrue(count($iterator) == 1 && $iterator->current() === $branch, 'Branch is added as a child element to the parent conditional.');
+
+    // Set another conditional as parent of branch.
+    $conditional2 = new RulesConditionalTestStubPlugin();
+    $branch->setParent($conditional2);
+    $this->assertIdentical($conditional2, $branch->parentElement(), 'Branch parent can be changed.');
+    $this->assertEqual(0, count($conditional->getIterator()), 'Branch is removed from old parent.');
+
+    // Set an incompatible parent.
+    $message = 'Branch prevents incompatible parent from being set.';
+    try {
+      $incompatibleContainer = new RulesActionSet();
+      $branch->setParent($incompatibleContainer);
+      $this->assert(FALSE, $message);
+    }
+    catch (RulesEvaluationException $ex) {
+      $this->assert(TRUE, $message);
+    }
+  }
 }
 
 /**
