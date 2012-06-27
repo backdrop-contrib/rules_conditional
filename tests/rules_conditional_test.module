@@ -8,6 +8,20 @@
  * Implements hook_rules_plugin_info().
  */
 function rules_conditional_test_rules_plugin_info() {
-  // TODO
-  return array();
+  return array(
+    'test_conditional' => array(
+      'class' => 'RulesConditionalTestPlugin',
+      'embeddable' => 'RulesActionContainer',
+      'extenders' => array(
+        'RulesPluginUIInterface' => 'RulesPluginUI',
+      ),
+    ),
+    'test_conditional_branch' => array(
+      'class' => 'RulesConditionalTestBranchPlugin',
+      'embeddable' => 'RulesActionContainer',
+      'extenders' => array(
+        'RulesPluginUIInterface' => 'RulesPluginUI',
+      ),
+    ),
+  );
 }
