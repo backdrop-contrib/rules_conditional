@@ -23,6 +23,7 @@ function rules_conditional_rules_plugin_info() {
       'label' => t('If', array(), array('context' => 'conditional rules')),
       'class' => 'RulesConditionalIf',
       'embeddable' => 'RulesConditional',
+      'conditional predicate' => TRUE,
       'extenders' => array(
         'RulesPluginUIInterface' => array(
           'class' => 'RulesConditionalPredicateUI',
@@ -33,6 +34,7 @@ function rules_conditional_rules_plugin_info() {
       'label' => t('Else if', array(), array('context' => 'conditional rules')),
       'class' => 'RulesConditionalElseIf',
       'embeddable' => 'RulesConditional',
+      'conditional predicate' => TRUE,
       'extenders' => array(
         'RulesPluginUIInterface' => array(
           'class' => 'RulesConditionalPredicateUI',

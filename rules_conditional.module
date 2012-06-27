@@ -3,3 +3,11 @@
  * @file
  * Main module file.
  */
+
+/**
+ * Implements hook_rules_ui_menu_alter().
+ */
+function rules_conditional_rules_ui_menu_alter(&$items, $base_path, $base_count) {
+  module_load_include('inc', 'rules_conditional', 'includes/rules_conditional.rules_admin');
+  _rules_conditional_rules_ui_menu_alter($items, $base_path, $base_count);
+}
