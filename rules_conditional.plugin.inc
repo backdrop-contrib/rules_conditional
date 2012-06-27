@@ -73,8 +73,8 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
   protected $parent = NULL;
 
   public function label() {
-    $plugin = $this->plugin();
-    $label = drupal_strtoupper(drupal_substr($plugin, 0, 1)) . drupal_substr($plugin, 1);
+    $info = $this->pluginInfo();
+    $label = isset($info['label']) ? $info['label'] : t('unlabeled');
     return $label;
   }
 
