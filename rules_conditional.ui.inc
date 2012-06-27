@@ -5,6 +5,28 @@
  */
 
 /**
+ * Empty UI for doing nothing with the plugin.
+ */
+class RulesConditionalEmptyUI extends RulesPluginUI {
+  public function form(&$form, &$form_state, $options = array()) {
+    // Save element.
+    $this->element->save();
+    // Redirect right away.
+    $path = RulesPluginUI::defaultRedirect($this->element);
+    drupal_goto($path);
+  }
+
+  public function operations() {
+    $ops = parent::operations();
+    // Get rid of the 'edit' link.
+    if (isset($ops['#links']['edit'])) {
+      unset($ops['#links']['edit']);
+    }
+    return $ops;
+  }
+}
+
+/**
  * UI for configuring the propositional antecedent in a conditional element.
  */
 class RulesConditionalAntecedentUI extends RulesRuleUI {
