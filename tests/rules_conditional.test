@@ -25,6 +25,19 @@ class RulesConditionalFrameworkTestCase extends DrupalWebTestCase {
   protected function setUp() {
     parent::setUp('rules_conditional_test');
   }
+
+  /**
+   * Tests plugin label.
+   */
+  public function testPluginLabel() {
+    $conditional = new RulesConditionalTestStubPlugin();
+    $label = $conditional->label();
+    $this->assertEqual('Stub conditional', $label, 'Default conditional element label uses the plugin label.');
+
+    $branch = new RulesConditionalTestStubBranchPlugin();
+    $label = $branch->label();
+    $this->assertEqual('Stub conditional branch', $label, 'Default conditional branch element label uses the plugin label.');
+  }
 }
 
 /**
