@@ -52,7 +52,7 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
 
   public function __construct(FacesExtendable $object) {
     parent::__construct($object);
-    $this->predicate = $object->property('predicate');
+    $this->predicate = $this->property('predicate');
     if (!is_object($this->predicate) || $this->predicate instanceof RulesContainerPlugin) {
       // TODO: Find out how to eventually nest a conditional container UI.
       $this->predicate = NULL;
