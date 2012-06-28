@@ -46,53 +46,62 @@ class RulesConditionalEmptyUI extends RulesConditionalPluginUI {
  */
 class RulesConditionalPredicateUI extends RulesContainerPluginUI {
   /**
+   * @var RulesPlugin
+   */
+  protected $predicate;
+
+  public function __construct(FacesExtendable $object) {
+    parent::__construct($object);
+    $this->predicate = $object->property('predicate');
+    if (!is_object($this->predicate) || $this->predicate instanceof RulesContainerPlugin) {
+      // TODO: Find out how to eventually nest a conditional container UI.
+      $this->predicate = NULL;
+      return;
+    }
+  }
+
+  /**
    * Delegates the form to the predicate.
    */
   public function form(&$form, &$form_state, $options = array()) {
-    /** @var $predicate RulesPlugin */
-    $predicate = $this->property('predicate');
-    if (!is_object($predicate) || $predicate instanceof RulesContainerPlugin) {
-      // TODO: Find out how to eventually nest a conditional container UI.
-      return;
+    if (isset($this->predicate)) {
+      // Build form for predicate.
+      $this->predicate->form($form, $form_state, $options);
     }
-    // Build form for predicate.
-    $predicate->form($form, $form_state, $options);
   }
 
   /**
    * Delegates the form validator to the predicate.
    */
   public function form_validate($form, &$form_state) {
-    /** @var $predicate RulesPlugin */
-    $predicate = $this->property('predicate');
-    if (!is_object($predicate) || $predicate instanceof RulesContainerPlugin) {
-      // TODO: Find out how to eventually nest a conditional container UI.
-      return;
+    if (isset($this->predicate)) {
+      // Validate form for predicate.
+      $this->predicate->form_validate($form, $form_state);
     }
-    // Validate form for predicate.
-    $predicate->form_validate($form, $form_state);
   }
 
   /**
    * Delegates the form submit handler to the predicate.
    */
   public function form_submit($form, &$form_state) {
-    /** @var $predicate RulesPlugin */
-    $predicate = $this->property('predicate');
-    if (!is_object($predicate) || $predicate instanceof RulesContainerPlugin) {
-      // TODO: Find out how to eventually nest a conditional container UI.
-      return;
+    if (isset($this->predicate)) {
+      // Handle form submission for predicate.
+      $this->predicate->form_submit($form, $form_state);
     }
-    // Handle form submission for predicate.
-    $predicate->form_submit($form, $form_state);
   }
 
   public function buildContent() {
-    $content = parent::buildContent();
-    $content['label']['#markup'] = t('@plugin %label', array(
-      '@plugin' => drupal_ucfirst($this->element->plugin()),
-      '%label' => $this->element->label(),
-    ));
+    $content = NULL;
+    if (isset($this->predicate)) {
+      // Handle form submission for predicate.
+      $content = $this->predicate->buildContent();
+      $content['label']['#type'] = 'markup';
+      unset($content['label']['#title']);
+      $content['label']['#markup'] = t('@plugin: @label', array(
+        '@plugin' => drupal_ucfirst($this->element->plugin()),
+        '@label' => $this->predicate->label(),
+      ));
+    }
     return $content;
   }
 }
