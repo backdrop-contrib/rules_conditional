@@ -228,6 +228,19 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
   }
 
   /**
+   * Adds predicate assertions to state.
+   */
+  protected function stateVariables($element = NULL) {
+    $this->forceSetUp();
+    $variables = parent::stateVariables($element);
+    // Add assertions from the predicate.
+    if (isset($this->predicate) && $assertions = $this->predicate->call('variableInfoAssertions')) {
+      $variables = RulesData::addMetadataAssertions($variables, $assertions);
+    }
+    return $variables;
+  }
+
+  /**
    * Determines whether this branch can be evaluated.
    */
   public function canEvaluate(RulesState $state) {
