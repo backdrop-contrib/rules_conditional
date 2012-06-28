@@ -210,8 +210,7 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
       return $pluginLabel;
     }
     else {
-      $label = !$this->predicate->isNegated() ? '@plugin "@predicate_label"' : '@plugin NOT "@predicate_label"';
-      return t($label, array('@plugin' => $pluginLabel, '@predicate_label' => $this->predicate->label()));
+      return $this->predicate->label();
     }
   }
 

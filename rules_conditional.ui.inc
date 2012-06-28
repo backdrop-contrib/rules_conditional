@@ -49,7 +49,6 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
    * Delegates the form to the predicate.
    */
   public function form(&$form, &$form_state, $options = array()) {
-    drupal_set_title(rules_get_title('Editing !label', $this->element));
     /** @var $predicate RulesPlugin */
     $predicate = $this->property('predicate');
     if (!is_object($predicate) || $predicate instanceof RulesContainerPlugin) {
@@ -86,5 +85,14 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
     }
     // Handle form submission for predicate.
     $predicate->form_submit($form, $form_state);
+  }
+
+  public function buildContent() {
+    $content = parent::buildContent();
+    $content['label']['#markup'] = t('@plugin %label', array(
+      '@plugin' => drupal_ucfirst($this->element->plugin()),
+      '%label' => $this->element->label(),
+    ));
+    return $content;
   }
 }
