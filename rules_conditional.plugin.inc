@@ -164,7 +164,14 @@ class RulesConditional extends RulesConditionalPlugin {
    *   An array of branches to evaluate.
    */
   protected function selectBranches(RulesState $state) {
-    // TODO: Implement selectBranches() method.
+    /** @var $branch RulesConditionalBranchPlugin */
+    foreach ($this->children as $branch) {
+      // Select the first matched branch.
+      if ($branch->canEvaluate($state)) {
+        return array($branch);
+      }
+    }
+    // Return no branch if none matched.
     return array();
   }
 }
