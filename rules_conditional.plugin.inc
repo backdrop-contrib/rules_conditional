@@ -147,6 +147,14 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
     // Otherwise, return nothing if no next sibling is applicable.
     return NULL;
   }
+
+  public function integrityCheck() {
+    parent::integrityCheck();
+    $this->checkSiblings();
+    return $this;
+  }
+
+  protected function checkSiblings() {}
 }
 
 /**
@@ -230,6 +238,12 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
     }
   }
 
+  protected function checkSiblings() {
+    if ($this->getPreviousSibling()) {
+      throw new RulesIntegrityException(t('The conditional "%plugin" cannot be preceded by another element.', array('%plugin' => $this->plugin())), $this);
+    }
+  }
+
   /**
    * Uses predicate parameters as the branch's own.
    */
@@ -281,6 +295,12 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
  */
 class RulesConditionalElseIf extends RulesConditionalIf {
   protected $itemName = 'else if';
+
+  protected function checkSiblings() {
+    if (!($sibling = $this->getPreviousSibling()) || !$sibling instanceof RulesConditionalIf) {
+      throw new RulesIntegrityException(t('The conditional "%plugin" must be preceded by "if".', array('%plugin' => $this->plugin())), $this);
+    }
+  }
 }
 
 /**
@@ -291,6 +311,15 @@ class RulesConditionalElse extends RulesConditionalBranchPlugin {
 
   public function getCompatibleConditionalClass() {
     return 'RulesConditional';
+  }
+
+  protected function checkSiblings() {
+    if ($this->getNextSibling()) {
+      throw new RulesIntegrityException(t('The conditional "%plugin" cannot precede another element.', array('%plugin' => $this->plugin())), $this);
+    }
+    if (!($sibling = $this->getPreviousSibling()) || !$sibling instanceof RulesConditionalIf) {
+      throw new RulesIntegrityException(t('The conditional "%plugin" must be preceded by "if" or "else if".', array('%plugin' => $this->plugin())), $this);
+    }
   }
 
   /**
