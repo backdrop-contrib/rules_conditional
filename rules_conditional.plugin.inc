@@ -189,6 +189,8 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
     if (isset($predicate)) {
       $this->predicate = is_object($predicate) && $predicate instanceof RulesConditionInterface ? $predicate : rules_condition($predicate, $settings);
       $this->predicate->parent = $this;
+      // Set up variables with the new parent.
+      $this->resetInternalCache();
     }
   }
 
@@ -197,6 +199,13 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
     if (isset($this->predicate)) {
       // Use predicate settings as the branch's own.
       $this->settings = $this->predicate->settings;
+    }
+  }
+
+  public function resetInternalCache() {
+    parent::resetInternalCache();
+    if (isset($this->predicate)) {
+      $this->predicate->resetInternalCache();
     }
   }
 
@@ -239,12 +248,17 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
    */
   protected function stateVariables($element = NULL) {
     $this->forceSetUp();
-    $variables = parent::stateVariables($element);
-    // Add assertions from the predicate.
-    if (isset($this->predicate) && $assertions = $this->predicate->call('variableInfoAssertions')) {
-      $variables = RulesData::addMetadataAssertions($variables, $assertions);
+    if (!isset($element) || $element === $this->predicate) {
+      return parent::stateVariables();
     }
-    return $variables;
+    else {
+      // Add assertions from the predicate.
+      $variables = parent::stateVariables($element);
+      if (isset($this->predicate) && $assertions = $this->predicate->variableInfoAssertions()) {
+        $variables = RulesData::addMetadataAssertions($variables, $assertions);
+      }
+      return $variables;
+    }
   }
 
   /**
