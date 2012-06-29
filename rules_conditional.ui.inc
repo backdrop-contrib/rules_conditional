@@ -10,9 +10,26 @@
 class RulesConditionalPluginUI extends RulesContainerPluginUI {
   public function operations() {
     $ops = parent::operations();
+    $elementChildrenTypes = array();
+    foreach ($this->element->getIterator() as $element) {
+      $plugin = $element->plugin();
+      $elementChildrenTypes[$plugin] = $plugin;
+    }
     foreach (rules_fetch_data('plugin_info') as $plugin => $info) {
       if (!empty($info['conditional predicate']) && isset($ops['#links']['add_' . $plugin])) {
         $ops['#links']['add_' . $plugin]['href'] = RulesPluginUI::path($this->element->root()->name, 'add-predicate', $this->element, $plugin);
+      }
+      // Remove operations as specified in the plugin info.
+      $remove = FALSE;
+      if (!empty($info['conditional single']) && isset($elementChildrenTypes[$plugin])) {
+        $remove = TRUE;
+      }
+      elseif (!empty($info['conditional depends']) && !array_intersect($elementChildrenTypes, $info['conditional depends'])) {
+        $remove = TRUE;
+      }
+      // Remove link.
+      if ($remove) {
+        unset($ops['#links']['add_' . $plugin]);
       }
     }
     return $ops;

@@ -24,6 +24,7 @@ function rules_conditional_rules_plugin_info() {
       'class' => 'RulesConditionalIf',
       'embeddable' => 'RulesConditional',
       'conditional predicate' => TRUE,
+      'conditional single' => TRUE,
       'extenders' => array(
         'RulesPluginUIInterface' => array(
           'class' => 'RulesConditionalPredicateUI',
@@ -35,6 +36,7 @@ function rules_conditional_rules_plugin_info() {
       'class' => 'RulesConditionalElseIf',
       'embeddable' => 'RulesConditional',
       'conditional predicate' => TRUE,
+      'conditional depends' => array('if'),
       'extenders' => array(
         'RulesPluginUIInterface' => array(
           'class' => 'RulesConditionalPredicateUI',
@@ -45,6 +47,8 @@ function rules_conditional_rules_plugin_info() {
       'label' => t('Else', array(), array('context' => 'conditional rules')),
       'class' => 'RulesConditionalElse',
       'embeddable' => 'RulesConditional',
+      'conditional single' => TRUE,
+      'conditional depends' => array('if', 'else if'),
       'extenders' => array(
         'RulesPluginUIInterface' => array(
           'class' => 'RulesConditionalEmptyUI',
@@ -75,6 +79,8 @@ function rules_conditional_rules_plugin_info() {
       'label' => t('Default case', array(), array('context' => 'conditional rules')),
       'class' => 'RulesConditionalDefaultCase',
       'embeddable' => 'RulesConditionalSwitch',
+      'conditional single' => TRUE,
+      'conditional depends' => array('case'),
       'extenders' => array(
         'RulesPluginUIInterface' => array(
           'class' => 'RulesConditionalEmptyUI',
