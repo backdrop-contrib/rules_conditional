@@ -254,7 +254,7 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
     else {
       // Add assertions from the predicate.
       $variables = parent::stateVariables($element);
-      if (isset($this->predicate) && $assertions = $this->predicate->variableInfoAssertions()) {
+      if (isset($this->predicate) && $assertions = $this->predicate->call('variableInfoAssertions')) {
         $variables = RulesData::addMetadataAssertions($variables, $assertions);
       }
       return $variables;
