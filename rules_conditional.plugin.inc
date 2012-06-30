@@ -316,6 +316,19 @@ class RulesConditionalElse extends RulesConditionalBranchPlugin {
 class RulesConditionalSwitch extends RulesConditionalPlugin {
   protected $itemName = 'switch';
 
+  public function pluginParameterInfo() {
+    $parameterInfo = array(
+      'data' => array(
+        'type' => '*',
+        'label' => t('Data to match cases against'),
+        'description' => t('The data to be compared, specified by using a data selector, e.g. "node:author:name".'),
+        'restriction' => 'selector',
+        'allow null' => TRUE,
+      ),
+    );
+    return $parameterInfo;
+  }
+
   /**
    * Selects the branches to evaluate for this conditional.
    *
@@ -340,6 +353,23 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
     return 'RulesConditionalSwitch';
   }
 
+  public function pluginParameterInfo() {
+    $parameterInfo = array(
+      'value' => array(
+        'type' => '*',
+        'label' => t('Data value'),
+        'description' => t('The value to compare the data with.'),
+        'allow null' => TRUE,
+      ),
+    );
+    // Derive parameter info from switch variable selector.
+    $dataSelector = isset($this->parent->settings['data:select']) ? $this->parent->settings['data:select'] : NULL;
+    if ($wrapper = $this->applyDataSelector($dataSelector)) {
+      $parameterInfo['value']['type'] = $wrapper->type();
+    }
+    return $parameterInfo;
+  }
+
   /**
    * Determines whether this branch can be evaluated.
    */
@@ -353,6 +383,10 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
  */
 class RulesConditionalDefaultCase extends RulesConditionalCase {
   protected $itemName = 'default case';
+
+  public function pluginParameterInfo() {
+    return array();
+  }
 
   /**
    * Determines whether this branch can be evaluated.
