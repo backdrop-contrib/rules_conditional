@@ -83,6 +83,7 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
   public function form(&$form, &$form_state, $options = array()) {
     if (isset($this->predicate)) {
       // Build form for predicate.
+      $form_state['rules_element'] = $this->predicate;
       $this->predicate->form($form, $form_state, $options);
     }
   }
@@ -93,6 +94,7 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
   public function form_validate($form, &$form_state) {
     if (isset($this->predicate)) {
       // Validate form for predicate.
+      $form_state['rules_element'] = $this->predicate;
       $this->predicate->form_validate($form, $form_state);
     }
   }
@@ -103,6 +105,7 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
   public function form_submit($form, &$form_state) {
     if (isset($this->predicate)) {
       // Handle form submission for predicate.
+      $form_state['rules_element'] = $this->predicate;
       $this->predicate->form_submit($form, $form_state);
     }
   }
@@ -110,14 +113,21 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
   public function buildContent() {
     $content = NULL;
     if (isset($this->predicate)) {
-      // Handle form submission for predicate.
-      $content = $this->predicate->buildContent();
+      // Build default content.
+      $content = parent::buildContent();
+      // Build label.
       $content['label']['#type'] = 'markup';
       unset($content['label']['#title']);
+      $info = $this->element->pluginInfo();
       $content['label']['#markup'] = t('@plugin: @label', array(
-        '@plugin' => drupal_ucfirst($this->element->plugin()),
+        '@plugin' => isset($info['label']) ? $info['label'] : drupal_ucfirst($this->element->plugin()),
         '@label' => $this->predicate->label(),
       ));
+      // Handle form submission for predicate.
+      $predicateContent = $this->predicate->buildContent();
+      if (isset($predicateContent['description']['parameter'])) {
+        $content['description']['parameter'] = $predicateContent['description']['parameter'];
+      }
     }
     return $content;
   }
