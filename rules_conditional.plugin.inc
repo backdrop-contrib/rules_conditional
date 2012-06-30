@@ -202,10 +202,6 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
     }
   }
 
-  protected function setUp() {
-    parent::setUp();
-  }
-
   public function resetInternalCache() {
     parent::resetInternalCache();
     if (isset($this->predicate)) {
