@@ -132,3 +132,26 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
     return $content;
   }
 }
+
+/**
+ * Empty UI for doing nothing with the plugin.
+ */
+class RulesConditionalCaseUI extends RulesConditionalPluginUI {
+  protected function getParameterForm($name, $info, $settings, &$mode) {
+    $form = parent::getParameterForm($name, $info, $settings, $mode);
+    if ($name == 'value' && $mode == 'input') {
+      $parent = $this->element->parentElement();
+      if (isset($parent->settings['data:select'])) {
+        $dataSelector = $parent->settings['data:select'];
+        if ($wrapper = $this->element->applyDataSelector($dataSelector)) {
+          $dataInfo = $wrapper->info();
+          if (!empty($dataInfo['options list'])) {
+            $form['settings']['value']['#type'] = 'select';
+            $form['settings']['value']['#options'] = call_user_func($dataInfo['options list'], $this->element, $name);
+          }
+        }
+      }
+    }
+    return $form;
+  }
+}
