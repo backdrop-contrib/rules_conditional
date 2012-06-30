@@ -204,10 +204,6 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
 
   protected function setUp() {
     parent::setUp();
-    if (isset($this->predicate)) {
-      // Use predicate settings as the branch's own.
-      $this->settings = $this->predicate->settings;
-    }
   }
 
   public function resetInternalCache() {
@@ -220,7 +216,6 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
   public function __sleep() {
     $array = parent::__sleep();
     $array['predicate'] = 'predicate';
-    unset($array['settings']);
     return $array;
   }
 
@@ -229,9 +224,8 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
   }
 
   public function label() {
-    $pluginLabel = parent::label();
     if (!isset($this->predicate)) {
-      return $pluginLabel;
+      return parent::label();
     }
     else {
       return $this->predicate->label();
@@ -245,23 +239,9 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
   }
 
   /**
-   * Uses predicate parameters as the branch's own.
-   */
-  public function pluginParameterInfo() {
-    $this->forceSetUp();
-    if (isset($this->predicate)) {
-      return $this->predicate->pluginParameterInfo();
-    }
-    else {
-      return parent::pluginParameterInfo();
-    }
-  }
-
-  /**
    * Adds predicate assertions to state.
    */
   protected function stateVariables($element = NULL) {
-    $this->forceSetUp();
     if (!isset($element) || $element === $this->predicate) {
       return parent::stateVariables();
     }
