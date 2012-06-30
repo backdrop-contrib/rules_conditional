@@ -396,7 +396,21 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
    * Determines whether this branch can be evaluated.
    */
   public function canEvaluate(RulesState $state) {
-    // TODO: Implement canEvaluate() method.
+    // Prepare settings for 'data_is' condition.
+    $settings = array(
+      'data:select' => $this->parent->settings['data:select'],
+      'op' => '==',
+    );
+    if (isset($this->settings['value:select'])) {
+      $settings['value:select'] = $this->settings['value:select'];
+    }
+    else {
+      $settings['value'] = $this->settings['value'];
+    }
+    // Evaluate 'data_is'.
+    $condition = rules_condition('data_is', $settings);
+    $condition->parent = $this;
+    return $condition->evaluate($state);
   }
 }
 
