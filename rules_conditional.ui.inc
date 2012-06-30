@@ -140,18 +140,37 @@ class RulesConditionalCaseUI extends RulesConditionalPluginUI {
   protected function getParameterForm($name, $info, $settings, &$mode) {
     $form = parent::getParameterForm($name, $info, $settings, $mode);
     if ($name == 'value' && $mode == 'input') {
-      $parent = $this->element->parentElement();
-      if (isset($parent->settings['data:select'])) {
-        $dataSelector = $parent->settings['data:select'];
-        if ($wrapper = $this->element->applyDataSelector($dataSelector)) {
-          $dataInfo = $wrapper->info();
-          if (!empty($dataInfo['options list'])) {
-            $form['settings']['value']['#type'] = 'select';
-            $form['settings']['value']['#options'] = call_user_func($dataInfo['options list'], $this->element, $name);
-          }
-        }
+      $labels = $this->getValueOptionLabels();
+      if (isset($labels)) {
+        $form['settings']['value']['#type'] = 'select';
+        $form['settings']['value']['#options'] = $labels;
+        $form['settings']['value']['#empty_value'] = '';
       }
     }
     return $form;
+  }
+
+  public function buildContent() {
+    $content = parent::buildContent();
+    // Use option label for text.
+    if (isset($this->element->settings['value'])) {
+      $value = $this->element->settings['value'];
+      $labels = $this->getValueOptionLabels();
+      $content['description']['parameter']['value']['content']['#markup'] = isset($labels[$value]) ? $labels[$value] : $value;
+    }
+    return $content;
+  }
+
+  public function getValueOptionLabels() {
+    $parent = $this->element->parentElement();
+    if (isset($parent->settings['data:select'])) {
+      $dataSelector = $parent->settings['data:select'];
+      if ($wrapper = $this->element->applyDataSelector($dataSelector)) {
+        $dataInfo = $wrapper->info();
+        if (!empty($dataInfo['options list'])) {
+          return call_user_func($dataInfo['options list'], $this->element, 'value');
+        }
+      }
+    }
   }
 }
