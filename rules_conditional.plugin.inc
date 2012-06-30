@@ -388,6 +388,12 @@ class RulesConditionalDefaultCase extends RulesConditionalCase {
     return array();
   }
 
+  protected function checkSiblings() {
+    if ($this->getNextSibling()) {
+      throw new RulesIntegrityException(t('The switch "%plugin" cannot precede another element.', array('%plugin' => $this->plugin())), $this);
+    }
+  }
+
   /**
    * Determines whether this branch can be evaluated.
    */
