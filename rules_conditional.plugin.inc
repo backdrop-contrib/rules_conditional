@@ -338,8 +338,17 @@ class RulesConditionalSwitch extends RulesConditionalPlugin {
    *   An array of branches to evaluate.
    */
   protected function selectBranches(RulesState $state) {
-    // TODO: Implement selectBranches() method.
-    return array();
+    $branches = array();
+    /** @var $case RulesConditionalCase */
+    foreach ($this->children as $case) {
+      if ($case->canEvaluate($state)) {
+        $branches[] = $case;
+        if (!$case->fallThrough()) {
+          break;
+        }
+      }
+    }
+    return $branches;
   }
 }
 
@@ -361,6 +370,12 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
         'description' => t('The value to compare the data with.'),
         'allow null' => TRUE,
       ),
+      'fall_through' => array(
+        'type' => 'boolean',
+        'label' => t('Fall through'),
+        'description' => t('Fall through to next case when complete. If this option is not checked, the switch will terminate.'),
+        'restriction' => 'input',
+      ),
     );
     // Derive parameter info from switch variable selector.
     $dataSelector = isset($this->parent->settings['data:select']) ? $this->parent->settings['data:select'] : NULL;
@@ -368,6 +383,13 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
       $parameterInfo['value']['type'] = $wrapper->type();
     }
     return $parameterInfo;
+  }
+
+  /**
+   * Returns whether this case should fall through.
+   */
+  public function fallThrough() {
+    return !empty($this->settings['fall_through']);
   }
 
   /**
