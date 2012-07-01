@@ -32,6 +32,14 @@ class RulesConditionalTestStubPlugin extends RulesConditionalPlugin {
   protected function call_test() {
     throw new Exception('intercept');
   }
+
+  /**
+   * Sets a fluent element.
+   */
+  public function fluent(RulesActionContainer $element) {
+    $this->fluentElement = $element;
+    return $this;
+  }
 }
 
 /**

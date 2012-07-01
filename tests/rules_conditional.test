@@ -55,6 +55,19 @@ class RulesConditionalFrameworkTestCase extends DrupalWebTestCase {
   }
 
   /**
+   * Tests fluent interface.
+   */
+  public function testFluentInterface() {
+    $conditional = new RulesConditionalTestStubPlugin();
+    $container1 = new RulesActionSet();
+    $conditional->fluent($container1)->action('drupal_message', array('message' => '[site:name]'));
+    $this->assertEqual(1, count($container1->elements()), 'Fluent interface adds action to the active element.');
+    $container2 = new RulesActionSet();
+    $conditional->fluent($container2)->action('drupal_message', array('message' => '[site:name]'));
+    $this->assertEqual(1, count($container1->elements()), 'Fluent interface does not add action to a previously active element.');
+  }
+
+  /**
    * Tests branch add/remove methods.
    */
   public function testParentBranchOperation() {
