@@ -59,6 +59,12 @@ abstract class RulesConditionalPlugin extends RulesContainerPlugin implements Ru
    *   An array of branches to evaluate.
    */
   abstract protected function selectBranches(RulesState $state);
+
+  public function dependencies() {
+    $modules = array('rules_conditional' => 1);
+    $modules += array_flip(parent::dependencies());
+    return array_keys($modules);
+  }
 }
 
 /**
@@ -155,6 +161,12 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
   }
 
   protected function checkSiblings() {}
+
+  public function dependencies() {
+    $modules = array('rules_conditional' => 1);
+    $modules += array_flip(parent::dependencies());
+    return array_keys($modules);
+  }
 }
 
 /**
@@ -304,6 +316,14 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
       $export[$plugin] = $this->predicate->export();
     }
     return $export + parent::exportChildren('DO');
+  }
+
+  public function dependencies() {
+    $modules = array_flip(parent::dependencies());
+    if (isset($this->predicate)) {
+      $modules += array_flip($this->predicate->dependencies());
+    }
+    return array_keys($modules);
   }
 }
 
