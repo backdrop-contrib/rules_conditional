@@ -449,6 +449,14 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
     $condition->parent = $this;
     return $condition->evaluate($state);
   }
+
+  protected function importChildren($export, $key = NULL) {
+    parent::importChildren($export, 'DO');
+  }
+
+  protected function exportChildren($key = NULL) {
+    return parent::exportChildren('DO');
+  }
 }
 
 /**
@@ -475,5 +483,13 @@ class RulesConditionalDefaultCase extends RulesConditionalCase {
    */
   public function canEvaluate(RulesState $state) {
     return TRUE;
+  }
+
+  protected function importChildren($export, $key = NULL) {
+    RulesContainerPlugin::importChildren($export, $key);
+  }
+
+  protected function exportChildren($key = NULL) {
+    return RulesContainerPlugin::exportChildren($key);
   }
 }
