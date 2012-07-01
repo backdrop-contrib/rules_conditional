@@ -8,10 +8,51 @@
  * Base conditional statement plugin implementation.
  */
 abstract class RulesConditionalPlugin extends RulesContainerPlugin implements RulesActionInterface {
+  /**
+   * Magic methods to intercept.
+   * @var array
+   */
+  protected $interceptMethods = array();
+
+  /**
+   * @var RulesActionContainer
+   */
+  protected $fluentElement;
+
   public function label() {
     $info = $this->pluginInfo();
     $label = isset($info['label']) ? $info['label'] : t('unlabeled');
     return $label;
+  }
+
+  /**
+   * Intercepts calls to magic methods, possibly using reserved keywords.
+   */
+  public function __call($name, $arguments) {
+    if (in_array($name, $this->interceptMethods) && method_exists($this, $mapMethod = 'call_' . $name)) {
+      return call_user_func_array(array($this, $mapMethod), $arguments);
+    }
+    else {
+      return parent::__call($name, $arguments);
+    }
+  }
+
+  /**
+   * Adds an action to the active fluent statement.
+   *
+   * Pass either an instance of the RulesActionInterface or the arguments as
+   * needed by rules_action().
+   *
+   * @param $name
+   * @param array $settings
+   * @return $this
+   *   Returns $this for fluent interface.
+   */
+  public function action($name, array $settings = array()) {
+    if (isset($this->fluentElement)) {
+      $this->fluentElement->action($name, $settings);
+    }
+    return $this;
   }
 
   /**
@@ -180,25 +221,13 @@ class RulesConditional extends RulesConditionalPlugin {
   protected $itemName = 'conditional';
 
   /**
-   * @var RulesActionContainer
+   * Intercepts calls to "if", "elseIf", and "else".
+   * @var array
    */
-  protected $fluentElement;
+  protected $interceptMethods = array('if', 'elseIf', 'else');
 
   public function __construct() {
     parent::__construct();
-  }
-
-  /**
-   * Intercepts calls to "if", "elseIf", and "else" since these cannot be
-   * declared a methods.
-   */
-  public function __call($name, $arguments) {
-    if (in_array($name, array('if', 'elseIf', 'else')) && method_exists($this, $mapMethod = 'call_' . $name)) {
-      return call_user_func_array(array($this, $mapMethod), $arguments);
-    }
-    else {
-      return parent::__call($name, $arguments);
-    }
   }
 
   /**
@@ -220,29 +249,11 @@ class RulesConditional extends RulesConditionalPlugin {
   }
 
   /**
-   * Adds an "if" action, for use with magic call.
+   * Adds an "else" statement, for use with magic call.
    */
   protected function call_else() {
     $this->fluentElement = $element = rules_conditional_else();
     $element->setParent($this);
-    return $this;
-  }
-
-  /**
-   * Adds an action to the active statement.
-   *
-   * Pass either an instance of the RulesActionInterface or the arguments as
-   * needed by rules_action().
-   *
-   * @param $name
-   * @param array $settings
-   * @return self
-   *   Returns $this to support chained usage.
-   */
-  public function action($name, array $settings = array()) {
-    if (isset($this->fluentElement)) {
-      $this->fluentElement->action($name, $settings);
-    }
     return $this;
   }
 
@@ -447,15 +458,42 @@ class RulesConditionalElse extends RulesConditionalBranchPlugin {
 
 /**
  * Switch conditional container.
+ *
+ * @method RulesConditionalSwitch case() case($value, $fallThrough = FALSE, $valueIsSelector = FALSE) Adds a "case" statement.
+ * @method RulesConditionalSwitch defaultCase() defaultCase() Adds a "default case" statement.
  */
 class RulesConditionalSwitch extends RulesConditionalPlugin {
   protected $itemName = 'switch';
+
+  /**
+   * Intercepts calls to "case" and "defaultCase".
+   * @var array
+   */
+  protected $interceptMethods = array('case', 'defaultCase');
 
   public function __construct($dataSelector = NULL) {
     parent::__construct();
     if (isset($dataSelector)) {
       $this->settings['data:select'] = $dataSelector;
     }
+  }
+
+  /**
+   * Adds a "case" statement, for use with magic call.
+   */
+  protected function call_case($value, $fallThrough = FALSE, $valueIsSelector = FALSE) {
+    $this->fluentElement = $element = rules_conditional_case($value, $fallThrough, $valueIsSelector);
+    $element->setParent($this);
+    return $this;
+  }
+
+  /**
+   * Adds a "defaultCase" statement, for use with magic call.
+   */
+  protected function call_defaultCase() {
+    $this->fluentElement = $element = rules_conditional_default_case();
+    $element->setParent($this);
+    return $this;
   }
 
   public function pluginParameterInfo() {
