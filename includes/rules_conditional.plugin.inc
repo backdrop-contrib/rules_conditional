@@ -175,6 +175,10 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
 class RulesConditional extends RulesConditionalPlugin {
   protected $itemName = 'conditional';
 
+  public function __construct() {
+    parent::__construct();
+  }
+
   /**
    * Selects the branches to evaluate for this conditional.
    *
@@ -346,6 +350,10 @@ class RulesConditionalElseIf extends RulesConditionalIf {
 class RulesConditionalElse extends RulesConditionalBranchPlugin {
   protected $itemName = 'else';
 
+  public function __construct() {
+    parent::__construct();
+  }
+
   public function getCompatibleConditionalClass() {
     return 'RulesConditional';
   }
@@ -372,6 +380,13 @@ class RulesConditionalElse extends RulesConditionalBranchPlugin {
  */
 class RulesConditionalSwitch extends RulesConditionalPlugin {
   protected $itemName = 'switch';
+
+  public function __construct($dataSelector = NULL) {
+    parent::__construct();
+    if (isset($dataSelector)) {
+      $this->settings['data:select'] = $dataSelector;
+    }
+  }
 
   public function pluginParameterInfo() {
     $parameterInfo = array(
@@ -418,6 +433,18 @@ class RulesConditionalSwitch extends RulesConditionalPlugin {
  */
 class RulesConditionalCase extends RulesConditionalBranchPlugin {
   protected $itemName = 'case';
+
+  public function __construct($value = NULL, $valueIsSelector = FALSE) {
+    parent::__construct();
+    if (isset($value)) {
+      if ($valueIsSelector) {
+        $this->settings['value:select'] = $value;
+      }
+      else {
+        $this->settings['value'] = $value;
+      }
+    }
+  }
 
   public function getCompatibleConditionalClass() {
     return 'RulesConditionalSwitch';
@@ -488,6 +515,10 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
  */
 class RulesConditionalDefaultCase extends RulesConditionalCase {
   protected $itemName = 'default case';
+
+  public function __construct() {
+    parent::__construct();
+  }
 
   public function pluginParameterInfo() {
     return array();
