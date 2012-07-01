@@ -76,7 +76,7 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
    * The parent conditional.
    * @var RulesConditionalPlugin
    */
-  protected $parent = NULL;
+  protected $parent;
 
   public function label() {
     $info = $this->pluginInfo();
@@ -273,6 +273,9 @@ class RulesConditional extends RulesConditionalPlugin {
 class RulesConditionalIf extends RulesConditionalBranchPlugin {
   protected $itemName = 'if';
 
+  /**
+   * @var RulesPlugin
+   */
   protected $predicate;
 
   public function __construct($predicate = NULL, $settings = array()) {
