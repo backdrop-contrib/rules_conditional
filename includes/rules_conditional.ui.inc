@@ -123,7 +123,7 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
         '@plugin' => isset($info['label']) ? $info['label'] : drupal_ucfirst($this->element->plugin()),
         '@label' => $this->predicate->label(),
       ));
-      // Handle form submission for predicate.
+      // Build parameter description from predicate.
       $predicateContent = $this->predicate->buildContent();
       if (isset($predicateContent['description']['parameter'])) {
         $content['description']['parameter'] = $predicateContent['description']['parameter'];
@@ -134,7 +134,7 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
 }
 
 /**
- * Empty UI for doing nothing with the plugin.
+ * UI for supporting option lists in the case value.
  */
 class RulesConditionalCaseUI extends RulesConditionalPluginUI {
   protected function getParameterForm($name, $info, $settings, &$mode) {
