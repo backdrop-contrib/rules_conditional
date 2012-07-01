@@ -82,18 +82,18 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
     if ($this->parent == $parent) {
       return;
     }
-    // Remove from current parent.
-    if (isset($this->parent)) {
-      $this->parent->removeBranch($this);
-    }
     // Check parent class against the compatible class.
     $compatibleClass = $this->getCompatibleConditionalClass();
-    if ($parent instanceof $compatibleClass) {
-      $this->parent = $parent;
-      $this->parent->addBranch($this);
+    if (!$parent instanceof $compatibleClass) {
+      throw new RulesEvaluationException('This branch element is incompatible with the given conditional.', array(), $this, RulesLog::ERROR);
     }
     else {
-      throw new RulesEvaluationException('This branch element is incompatible with the given conditional.', array(), $this, RulesLog::ERROR);
+      // Remove from current parent.
+      if (isset($this->parent)) {
+        $this->parent->removeBranch($this);
+      }
+      $this->parent = $parent;
+      $this->parent->addBranch($this);
     }
   }
 
