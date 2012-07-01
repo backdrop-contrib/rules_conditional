@@ -377,11 +377,15 @@ class RulesConditionalSwitch extends RulesConditionalPlugin {
   protected function selectBranches(RulesState $state) {
     $branches = array();
     /** @var $case RulesConditionalCase */
+    $fallThrough = FALSE;
     foreach ($this->children as $case) {
-      if ($case->canEvaluate($state)) {
+      if ($fallThrough || $case->canEvaluate($state)) {
         $branches[] = $case;
         if (!$case->fallThrough()) {
           break;
+        }
+        else {
+          $fallThrough = TRUE;
         }
       }
     }
@@ -410,7 +414,7 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
       'fall_through' => array(
         'type' => 'boolean',
         'label' => t('Fall through'),
-        'description' => t('Fall through to next case when complete. If this option is not checked, the switch will terminate.'),
+        'description' => t('Fall through to next case when complete. If this option is checked, the next case is automatically executed (regardless of the case value) when this case is finished. If not, the switch will terminate when the case is finished.'),
         'restriction' => 'input',
       ),
     );
