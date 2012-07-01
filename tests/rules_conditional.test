@@ -40,6 +40,21 @@ class RulesConditionalFrameworkTestCase extends DrupalWebTestCase {
   }
 
   /**
+   * Tests intercepting a method.
+   */
+  public function testInterceptMethod() {
+    $message = 'Test magic method is intercepted.';
+    try {
+      $conditional = new RulesConditionalTestStubPlugin();
+      $conditional->test();
+      $this->assert(FALSE, $message);
+    }
+    catch (Exception $ex) {
+      $this->assertEqual('intercept', $ex->getMessage(), $message);
+    }
+  }
+
+  /**
    * Tests branch add/remove methods.
    */
   public function testParentBranchOperation() {

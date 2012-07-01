@@ -6,9 +6,13 @@
 
 /**
  * Test base conditional.
+ *
+ * @method RulesConditional test() test().
  */
 class RulesConditionalTestStubPlugin extends RulesConditionalPlugin {
   protected $itemName = 'stub conditional';
+
+  protected $interceptMethods = array('test');
 
   /**
    * Selects the branches to evaluate for this conditional.
@@ -20,6 +24,13 @@ class RulesConditionalTestStubPlugin extends RulesConditionalPlugin {
    */
   protected function selectBranches(RulesState $state) {
     // TODO: Implement selectBranches() method.
+  }
+
+  /**
+   * Intercepts the 'test' method.
+   */
+  protected function call_test() {
+    throw new Exception('intercept');
   }
 }
 
