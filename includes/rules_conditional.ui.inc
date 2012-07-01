@@ -156,7 +156,11 @@ class RulesConditionalCaseUI extends RulesConditionalPluginUI {
     if (isset($this->element->settings['value'])) {
       $value = $this->element->settings['value'];
       $labels = $this->getValueOptionLabels();
-      $content['description']['parameter']['value']['content']['#markup'] = isset($labels[$value]) ? $labels[$value] : $value;
+      $content['label']['#markup'] = t('@plugin: @case', array(
+        '@plugin' => $this->element->label(),
+        '@case' => isset($labels[$value]) ? $labels[$value] : $value,
+      ));
+      unset($content['description']['parameter']['value']);
     }
     return $content;
   }
