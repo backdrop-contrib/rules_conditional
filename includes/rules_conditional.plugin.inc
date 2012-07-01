@@ -434,7 +434,7 @@ class RulesConditionalSwitch extends RulesConditionalPlugin {
 class RulesConditionalCase extends RulesConditionalBranchPlugin {
   protected $itemName = 'case';
 
-  public function __construct($value = NULL, $valueIsSelector = FALSE) {
+  public function __construct($value = NULL, $fallThrough = FALSE, $valueIsSelector = FALSE) {
     parent::__construct();
     if (isset($value)) {
       if ($valueIsSelector) {
@@ -443,6 +443,7 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
       else {
         $this->settings['value'] = $value;
       }
+      $this->settings['fall_through'] = $fallThrough;
     }
   }
 
