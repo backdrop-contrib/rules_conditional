@@ -171,12 +171,79 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
 
 /**
  * Default if-else conditional statement.
+ *
+ * @method RulesConditional if() if($predicate, array $settings = array()) Adds an "if" statement.
+ * @method RulesConditional elseIf() elseIf($predicate, array $settings = array()) Adds an "else if" statement.
+ * @method RulesConditional else() else() Adds an "else" statement.
  */
 class RulesConditional extends RulesConditionalPlugin {
   protected $itemName = 'conditional';
 
+  /**
+   * @var RulesActionContainer
+   */
+  protected $fluentElement;
+
   public function __construct() {
     parent::__construct();
+  }
+
+  /**
+   * Intercepts calls to "if", "elseIf", and "else" since these cannot be
+   * declared a methods.
+   */
+  public function __call($name, $arguments) {
+    if (in_array($name, array('if', 'elseIf', 'else')) && method_exists($this, $mapMethod = 'call_' . $name)) {
+      return call_user_func_array(array($this, $mapMethod), $arguments);
+    }
+    else {
+      return parent::__call($name, $arguments);
+    }
+  }
+
+  /**
+   * Adds an "if" statement, for use with magic call.
+   */
+  protected function call_if($predicate, array $settings = array()) {
+    $this->fluentElement = $element = rules_conditional_if($predicate, $settings);
+    $element->setParent($this);
+    return $this;
+  }
+
+  /**
+   * Adds an "else if" statement, for use with magic call.
+   */
+  protected function call_elseIf($predicate, array $settings = array()) {
+    $this->fluentElement = $element = rules_conditional_else_if($predicate, $settings);
+    $element->setParent($this);
+    return $this;
+  }
+
+  /**
+   * Adds an "if" action, for use with magic call.
+   */
+  protected function call_else() {
+    $this->fluentElement = $element = rules_conditional_else();
+    $element->setParent($this);
+    return $this;
+  }
+
+  /**
+   * Adds an action to the active statement.
+   *
+   * Pass either an instance of the RulesActionInterface or the arguments as
+   * needed by rules_action().
+   *
+   * @param $name
+   * @param array $settings
+   * @return self
+   *   Returns $this to support chained usage.
+   */
+  public function action($name, array $settings = array()) {
+    if (isset($this->fluentElement)) {
+      $this->fluentElement->action($name, $settings);
+    }
+    return $this;
   }
 
   /**
