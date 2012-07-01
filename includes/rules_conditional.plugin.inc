@@ -424,6 +424,9 @@ class RulesConditionalDefaultCase extends RulesConditionalCase {
     if ($this->getNextSibling()) {
       throw new RulesIntegrityException(t('The switch "%plugin" cannot precede another element.', array('%plugin' => $this->plugin())), $this);
     }
+    if (!$this->getPreviousSibling()) {
+      throw new RulesIntegrityException(t('The switch "%plugin" must be preceded by "case".', array('%plugin' => $this->plugin())), $this);
+    }
   }
 
   /**
