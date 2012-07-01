@@ -195,11 +195,19 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
   public function __construct($predicate = NULL, $settings = array()) {
     parent::__construct();
     if (isset($predicate)) {
-      $this->predicate = is_object($predicate) && $predicate instanceof RulesConditionInterface ? $predicate : rules_condition($predicate, $settings);
-      $this->predicate->parent = $this;
-      // Set up variables with the new parent.
-      $this->resetInternalCache();
+      $predicate = is_object($predicate) && $predicate instanceof RulesConditionInterface ? $predicate : rules_condition($predicate, $settings);
+      $this->setPredicate($predicate);
     }
+  }
+
+  /**
+   * Sets a condition as predicate.
+   */
+  protected function setPredicate($predicate) {
+    $this->predicate = $predicate;
+    $this->predicate->parent = $this;
+    // Set up variables with the new parent.
+    $this->resetInternalCache();
   }
 
   public function resetInternalCache() {
@@ -226,6 +234,14 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
     else {
       return $this->predicate->label();
     }
+  }
+
+  public function integrityCheck() {
+    if (!isset($this->predicate)) {
+      throw new RulesIntegrityException(t('The conditional "%plugin" does not have a valid predicate.', array('%plugin' => $this->plugin())), $this);
+    }
+    parent::integrityCheck();
+    return $this;
   }
 
   protected function checkSiblings() {
@@ -263,6 +279,31 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
    */
   public function evaluateCondition(RulesState $state) {
     return $this->predicate->evaluate($state);
+  }
+
+  /**
+   * Imports predicate.
+   */
+  protected function importChildren($export, $key = NULL) {
+    $plugin = strtoupper($this->plugin());
+    if (isset($export[$plugin])) {
+      $predicate = rules_plugin_factory('condition');
+      $this->setPredicate($predicate);
+      $predicate->import($export[$plugin]);
+    }
+    parent::importChildren($export, 'DO');
+  }
+
+  /**
+   * Exports predicate with actions.
+   */
+  protected function exportChildren($key = NULL) {
+    $export = array();
+    if (isset($this->predicate)) {
+      $plugin = strtoupper($this->plugin());
+      $export[$plugin] = $this->predicate->export();
+    }
+    return $export + parent::exportChildren('DO');
   }
 }
 
