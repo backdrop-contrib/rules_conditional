@@ -8,8 +8,28 @@
  * Base UI for providing customized operation links.
  */
 class RulesConditionalPluginUI extends RulesContainerPluginUI {
+  public function form(&$form, &$form_state, $options = array(), $iterator = NULL) {
+    $pluginInfo = $this->element->pluginInfo();
+    if (!empty($pluginInfo['conditional empty'])) {
+      // Save element.
+      $this->object->save();
+      // Redirect right away.
+      $path = RulesPluginUI::defaultRedirect($this->object);
+      drupal_goto($path);
+    }
+    else {
+      parent::form($form, $form_state, $options, $iterator);
+    }
+  }
+
   public function operations() {
     $ops = parent::operations();
+    $pluginInfo = $this->element->pluginInfo();
+    // Remove edit link if empty.
+    if (!empty($pluginInfo['conditional empty']) && isset($ops['#links']['edit'])) {
+      unset($ops['#links']['edit']);
+    }
+    // Apply add operation extensions.
     $elementChildrenTypes = array();
     foreach ($this->element->getIterator() as $element) {
       $plugin = $element->plugin();
@@ -37,21 +57,28 @@ class RulesConditionalPluginUI extends RulesContainerPluginUI {
 }
 
 /**
- * Empty UI for doing nothing with the plugin.
+ * Base UI for conditional branch.
  */
-class RulesConditionalEmptyUI extends RulesConditionalPluginUI {
-  public function form(&$form, &$form_state, $options = array()) {
-    // Save element.
-    $this->element->save();
-    // Redirect right away.
-    $path = RulesPluginUI::defaultRedirect($this->element);
-    drupal_goto($path);
+class RulesConditionalBranchPluginUI extends RulesActionContainerUI {
+  public function form(&$form, &$form_state, $options = array(), $iterator = NULL) {
+    $pluginInfo = $this->element->pluginInfo();
+    if (!empty($pluginInfo['conditional empty'])) {
+      // Save element.
+      $this->object->save();
+      // Redirect right away.
+      $path = RulesPluginUI::defaultRedirect($this->object);
+      drupal_goto($path);
+    }
+    else {
+      parent::form($form, $form_state, $options, $iterator);
+    }
   }
 
   public function operations() {
     $ops = parent::operations();
-    // Get rid of the 'edit' link.
-    if (isset($ops['#links']['edit'])) {
+    $pluginInfo = $this->element->pluginInfo();
+    // Remove edit link if empty.
+    if (!empty($pluginInfo['conditional empty']) && isset($ops['#links']['edit'])) {
       unset($ops['#links']['edit']);
     }
     return $ops;
@@ -61,7 +88,7 @@ class RulesConditionalEmptyUI extends RulesConditionalPluginUI {
 /**
  * UI for configuring the predicate in a conditional branch.
  */
-class RulesConditionalPredicateUI extends RulesContainerPluginUI {
+class RulesConditionalPredicateUI extends RulesConditionalBranchPluginUI {
   /**
    * @var RulesPlugin
    */
@@ -136,7 +163,7 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
 /**
  * UI for supporting option lists in the case value.
  */
-class RulesConditionalCaseUI extends RulesConditionalPluginUI {
+class RulesConditionalCaseUI extends RulesConditionalBranchPluginUI {
   protected function getParameterForm($name, $info, $settings, &$mode) {
     $form = parent::getParameterForm($name, $info, $settings, $mode);
     if ($name == 'value' && $mode == 'input') {
