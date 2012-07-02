@@ -534,6 +534,14 @@ class RulesConditionalSwitch extends RulesConditionalPlugin {
     }
     return $branches;
   }
+
+  protected function importChildren($export, $key = NULL) {
+    parent::importChildren($export, 'DO');
+  }
+
+  protected function exportChildren($key = NULL) {
+    return parent::exportChildren('DO');
+  }
 }
 
 /**
