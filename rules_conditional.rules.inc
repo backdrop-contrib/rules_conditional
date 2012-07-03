@@ -13,10 +13,9 @@ function rules_conditional_rules_plugin_info() {
       'label' => t('Conditional', array(), array('context' => 'conditional rules')),
       'class' => 'RulesConditional',
       'embeddable' => 'RulesActionContainer',
-      'conditional empty' => TRUE,
       'extenders' => array(
         'RulesPluginUIInterface' => array(
-          'class' => 'RulesConditionalPluginUI',
+          'class' => 'RulesConditionalEmptyUI',
         ),
       ),
     ),
@@ -50,10 +49,9 @@ function rules_conditional_rules_plugin_info() {
       'embeddable' => 'RulesConditional',
       'conditional single' => TRUE,
       'conditional depends' => array('if', 'else if'),
-      'conditional empty' => TRUE,
       'extenders' => array(
         'RulesPluginUIInterface' => array(
-          'class' => 'RulesConditionalBranchPluginUI',
+          'class' => 'RulesConditionalEmptyUI',
         ),
       ),
     ),
@@ -83,10 +81,9 @@ function rules_conditional_rules_plugin_info() {
       'embeddable' => 'RulesConditionalSwitch',
       'conditional single' => TRUE,
       'conditional depends' => array('case'),
-      'conditional empty' => TRUE,
       'extenders' => array(
         'RulesPluginUIInterface' => array(
-          'class' => 'RulesConditionalBranchPluginUI',
+          'class' => 'RulesConditionalEmptyUI',
         ),
       ),
     ),
