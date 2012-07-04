@@ -9,7 +9,7 @@
  *
  * @method RulesConditional test() test().
  */
-class RulesConditionalTestStubPlugin extends RulesConditionalPlugin {
+class RulesConditionalTestStubContainer extends RulesConditionalContainer {
   protected $itemName = 'stub conditional';
 
   protected $interceptMethods = array('test');
@@ -19,7 +19,7 @@ class RulesConditionalTestStubPlugin extends RulesConditionalPlugin {
    *
    * @param RulesState $state
    *   Rules state to use.
-   * @return RulesConditionalBranchPlugin[]
+   * @return RulesConditionalElement[]
    *   An array of branches to evaluate.
    */
   protected function selectBranches(RulesState $state) {
@@ -45,7 +45,7 @@ class RulesConditionalTestStubPlugin extends RulesConditionalPlugin {
 /**
  * Test branch.
  */
-class RulesConditionalTestStubBranchPlugin extends RulesConditionalBranchPlugin {
+class RulesConditionalTestStubElement extends RulesConditionalElement {
   protected $itemName = 'stub conditional branch';
 
   /**

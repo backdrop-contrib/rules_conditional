@@ -7,7 +7,7 @@
 /**
  * Base conditional statement plugin implementation.
  */
-abstract class RulesConditionalPlugin extends RulesContainerPlugin implements RulesActionInterface {
+abstract class RulesConditionalContainer extends RulesContainerPlugin implements RulesActionInterface {
   /**
    * Magic methods to intercept.
    * @var array
@@ -82,7 +82,7 @@ abstract class RulesConditionalPlugin extends RulesContainerPlugin implements Ru
     // Collect variables.
     $hasDefault = FALSE;
     $childVariables = array();
-    /** @var $child RulesConditionalBranchPlugin */
+    /** @var $child RulesConditionalElement */
     foreach ($this->children as $child) {
       $hasDefault = $hasDefault || $child->isDefault();
       if ($childProvides = $child->providesVariables()) {
@@ -123,29 +123,11 @@ abstract class RulesConditionalPlugin extends RulesContainerPlugin implements Ru
   }
 
   /**
-   * Adds a branch element.
-   */
-  public function addBranch(RulesConditionalBranchPlugin $branch) {
-    $this->children[] = $branch;
-    $this->resetInternalCache();
-  }
-
-  /**
-   * Removes a branch element.
-   */
-  public function removeBranch(RulesConditionalBranchPlugin $branch) {
-    if (FALSE !== $key = array_search($branch, $this->children)) {
-      unset($this->children[$key]);
-      $this->resetInternalCache();
-    }
-  }
-
-  /**
    * Selects the branches to evaluate for this conditional.
    *
    * @param RulesState $state
    *   Rules state to use.
-   * @return RulesConditionalBranchPlugin[]
+   * @return RulesConditionalElement[]
    *   An array of branches to evaluate.
    */
   abstract protected function selectBranches(RulesState $state);
@@ -167,13 +149,12 @@ abstract class RulesConditionalPlugin extends RulesContainerPlugin implements Ru
 }
 
 /**
- * Base conditional branch plugin implementation, to be contained within a
- * RulesConditionalPlugin.
+ * Base conditional element plugin implementation.
  */
-abstract class RulesConditionalBranchPlugin extends RulesActionContainer implements RulesActionInterface {
+abstract class RulesConditionalElement extends RulesActionContainer implements RulesActionInterface {
   /**
    * The parent conditional.
-   * @var RulesConditionalPlugin
+   * @var RulesConditionalContainer
    */
   protected $parent;
 
@@ -183,31 +164,32 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
     return $label;
   }
 
+  /**
+   * @todo Remove once http://drupal.org/node/1671344 is resolved.
+   */
   public function setParent(RulesContainerPlugin $parent) {
     if ($this->parent == $parent) {
       return;
     }
     // Check parent class against the compatible class.
-    $compatibleClass = $this->getCompatibleConditionalClass();
-    if (!$parent instanceof $compatibleClass) {
-      throw new RulesEvaluationException('This branch element is incompatible with the given conditional.', array(), $this, RulesLog::ERROR);
+    $pluginInfo = $this->pluginInfo();
+    if (empty($pluginInfo['embeddable'])) {
+      throw new RulesEvaluationException('This element cannot be embedded.', array(), $this, RulesLog::ERROR);
     }
-    else {
-      // Remove from current parent.
-      if (isset($this->parent)) {
-        $this->parent->removeBranch($this);
-      }
-      $this->parent = $parent;
-      $this->parent->addBranch($this);
+    elseif (!$parent instanceof $pluginInfo['embeddable']) {
+      throw new RulesEvaluationException('The given container is incompatible with this element.', array(), $this, RulesLog::ERROR);
     }
-  }
 
-  /**
-   * Gets the container class for this branch plugin. This must be a subclass of
-   * RulesConditionalPlugin.
-   */
-  public function getCompatibleConditionalClass() {
-    return 'RulesConditionalPlugin';
+    if (isset($this->parent) && ($key = array_search($this, $this->parent->children)) !== FALSE) {
+      // Remove element from any previous parent.
+      unset($this->parent->children[$key]);
+      $this->parent->resetInternalCache();
+    }
+
+    // Update parent.
+    $this->parent = $parent;
+    $parent->children[] = $this;
+    $this->parent->resetInternalCache();
   }
 
   public function providesVariables() {
@@ -313,7 +295,7 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
  * @method RulesConditional if() if($predicate, array $settings = array()) Adds an "if" statement.
  * @method RulesConditional else() else() Adds an "else" statement.
  */
-class RulesConditional extends RulesConditionalPlugin {
+class RulesConditional extends RulesConditionalContainer {
   protected $itemName = 'conditional';
 
   /**
@@ -349,11 +331,11 @@ class RulesConditional extends RulesConditionalPlugin {
    *
    * @param RulesState $state
    *   Rules state to use.
-   * @return RulesConditionalBranchPlugin[]
+   * @return RulesConditionalElement[]
    *   An array of branches to evaluate.
    */
   protected function selectBranches(RulesState $state) {
-    /** @var $branch RulesConditionalBranchPlugin */
+    /** @var $branch RulesConditionalElement */
     foreach ($this->children as $branch) {
       // Select the first matched branch.
       if ($branch->canEvaluate($state)) {
@@ -368,7 +350,7 @@ class RulesConditional extends RulesConditionalPlugin {
 /**
  * The "if" clause.
  */
-class RulesConditionalIf extends RulesConditionalBranchPlugin {
+class RulesConditionalIf extends RulesConditionalElement {
   protected $itemName = 'if';
 
   /**
@@ -405,10 +387,6 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
     $array = parent::__sleep();
     $array['predicate'] = 'predicate';
     return $array;
-  }
-
-  public function getCompatibleConditionalClass() {
-    return 'RulesConditional';
   }
 
   public function label() {
@@ -526,15 +504,11 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
 /**
  * The "else" clause.
  */
-class RulesConditionalElse extends RulesConditionalBranchPlugin {
+class RulesConditionalElse extends RulesConditionalElement {
   protected $itemName = 'else';
 
   public function __construct() {
     parent::__construct();
-  }
-
-  public function getCompatibleConditionalClass() {
-    return 'RulesConditional';
   }
 
   protected function checkSiblings() {
@@ -557,7 +531,7 @@ class RulesConditionalElse extends RulesConditionalBranchPlugin {
  * @method RulesConditionalSwitch case() case($value, $fallThrough = FALSE, $valueIsSelector = FALSE) Adds a "case" statement.
  * @method RulesConditionalSwitch defaultCase() defaultCase() Adds a "default case" statement.
  */
-class RulesConditionalSwitch extends RulesConditionalPlugin {
+class RulesConditionalSwitch extends RulesConditionalContainer {
   protected $itemName = 'switch';
 
   /**
@@ -609,7 +583,7 @@ class RulesConditionalSwitch extends RulesConditionalPlugin {
    *
    * @param RulesState $state
    *   Rules state to use.
-   * @return RulesConditionalBranchPlugin[]
+   * @return RulesConditionalElement[]
    *   An array of branches to evaluate.
    */
   protected function selectBranches(RulesState $state) {
@@ -642,7 +616,7 @@ class RulesConditionalSwitch extends RulesConditionalPlugin {
 /**
  * Switch case.
  */
-class RulesConditionalCase extends RulesConditionalBranchPlugin {
+class RulesConditionalCase extends RulesConditionalElement {
   protected $itemName = 'case';
 
   /**
@@ -666,10 +640,6 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
   protected function setUp() {
     parent::setUp();
     $this->setUpCondition();
-  }
-
-  public function getCompatibleConditionalClass() {
-    return 'RulesConditionalSwitch';
   }
 
   public function pluginParameterInfo() {
