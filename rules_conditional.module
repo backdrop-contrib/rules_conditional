@@ -27,13 +27,6 @@ function rules_conditional_if($predicate, array $settings = array()) {
 }
 
 /**
- * Creates an "else if".
- */
-function rules_conditional_else_if($predicate, array $settings = array()) {
-  return new RulesConditionalElseIf($predicate, $settings);
-}
-
-/**
  * Creates an "else".
  */
 function rules_conditional_else() {

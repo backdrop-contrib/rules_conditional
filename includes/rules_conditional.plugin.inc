@@ -311,17 +311,16 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
  * Default if-else conditional statement.
  *
  * @method RulesConditional if() if($predicate, array $settings = array()) Adds an "if" statement.
- * @method RulesConditional elseIf() elseIf($predicate, array $settings = array()) Adds an "else if" statement.
  * @method RulesConditional else() else() Adds an "else" statement.
  */
 class RulesConditional extends RulesConditionalPlugin {
   protected $itemName = 'conditional';
 
   /**
-   * Intercepts calls to "if", "elseIf", and "else".
+   * Intercepts calls to "if" and "else".
    * @var array
    */
-  protected $interceptMethods = array('if', 'elseIf', 'else');
+  protected $interceptMethods = array('if', 'else');
 
   public function __construct() {
     parent::__construct();
@@ -332,15 +331,6 @@ class RulesConditional extends RulesConditionalPlugin {
    */
   protected function call_if($predicate, array $settings = array()) {
     $this->fluentElement = $element = rules_conditional_if($predicate, $settings);
-    $element->setParent($this);
-    return $this;
-  }
-
-  /**
-   * Adds an "else if" statement, for use with magic call.
-   */
-  protected function call_elseIf($predicate, array $settings = array()) {
-    $this->fluentElement = $element = rules_conditional_else_if($predicate, $settings);
     $element->setParent($this);
     return $this;
   }
@@ -552,7 +542,7 @@ class RulesConditionalElse extends RulesConditionalBranchPlugin {
       throw new RulesIntegrityException(t('The conditional "%plugin" cannot precede another element.', array('%plugin' => $this->plugin())), $this);
     }
     if (!($sibling = $this->getPreviousSibling()) || !$sibling instanceof RulesConditionalIf) {
-      throw new RulesIntegrityException(t('The conditional "%plugin" must be preceded by "if" or "else if".', array('%plugin' => $this->plugin())), $this);
+      throw new RulesIntegrityException(t('The conditional "%plugin" must be preceded by "if".', array('%plugin' => $this->plugin())), $this);
     }
   }
 
