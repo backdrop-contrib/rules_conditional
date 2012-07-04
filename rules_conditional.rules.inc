@@ -24,31 +24,19 @@ function rules_conditional_rules_plugin_info() {
       'class' => 'RulesConditionalIf',
       'embeddable' => 'RulesConditional',
       'conditional predicate' => TRUE,
-      'conditional single' => TRUE,
       'extenders' => array(
         'RulesPluginUIInterface' => array(
           'class' => 'RulesConditionalPredicateUI',
         ),
       ),
-    ),
-    'else if' => array(
-      'label' => t('Else if', array(), array('context' => 'conditional rules')),
-      'class' => 'RulesConditionalElseIf',
-      'embeddable' => 'RulesConditional',
-      'conditional predicate' => TRUE,
-      'conditional depends' => array('if'),
-      'extenders' => array(
-        'RulesPluginUIInterface' => array(
-          'class' => 'RulesConditionalPredicateUI',
-        ),
-      ),
+      'import keys' => array('IF', 'ELSE IF'),
     ),
     'else' => array(
       'label' => t('Else', array(), array('context' => 'conditional rules')),
       'class' => 'RulesConditionalElse',
       'embeddable' => 'RulesConditional',
       'conditional single' => TRUE,
-      'conditional depends' => array('if', 'else if'),
+      'conditional depends' => array('if'),
       'extenders' => array(
         'RulesPluginUIInterface' => array(
           'class' => 'RulesConditionalEmptyUI',

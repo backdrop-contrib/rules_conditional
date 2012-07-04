@@ -394,12 +394,22 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
   }
 
   public function label() {
-    if (!isset($this->predicate)) {
-      return parent::label();
+    $text = '@plugin';
+    $variables = array();
+
+    $previous = $this->getPreviousSibling();
+    if ($previous && $previous instanceof RulesConditionalIf) {
+      $variables['@plugin'] = t('(Else) If', array(), array('context' => 'conditional rules'));
     }
     else {
-      return $this->predicate->label();
+      $variables['@plugin'] = parent::label();
     }
+
+    if (isset($this->predicate)) {
+      $text = '@plugin: @label';
+      $variables['@label'] = $this->predicate->label();
+    }
+    return t($text, $variables);
   }
 
   public function integrityCheck() {
@@ -411,8 +421,9 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
   }
 
   protected function checkSiblings() {
-    if ($this->getPreviousSibling()) {
-      throw new RulesIntegrityException(t('The conditional "%plugin" cannot be preceded by another element.', array('%plugin' => $this->plugin())), $this);
+    $previous = $this->getPreviousSibling();
+    if ($previous && !$previous instanceof RulesConditionalIf) {
+      throw new RulesIntegrityException(t('The conditional "%plugin" cannot be preceded by any element other than "if".', array('%plugin' => $this->plugin())), $this);
     }
   }
 
@@ -452,10 +463,14 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
    */
   protected function importChildren($export, $key = NULL) {
     $plugin = strtoupper($this->plugin());
-    if (isset($export[$plugin])) {
-      $predicate = rules_plugin_factory('condition');
-      $this->setPredicate($predicate);
-      $predicate->import($export[$plugin]);
+    $pluginInfo = $this->pluginInfo();
+    $keys = !empty($pluginInfo['import keys']) ? $pluginInfo['import keys'] : array($plugin);
+    foreach ($keys as $key) {
+      if (isset($export[$key])) {
+        $predicate = rules_plugin_factory('condition');
+        $this->setPredicate($predicate);
+        $predicate->import($export[$key]);
+      }
     }
     parent::importChildren($export, 'DO');
   }
@@ -466,10 +481,19 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
   protected function exportChildren($key = NULL) {
     $export = array();
     if (isset($this->predicate)) {
-      $plugin = strtoupper($this->plugin());
+      if (!$this->getPreviousSibling()) {
+        $plugin = strtoupper($this->plugin());
+      }
+      else {
+        $plugin = 'ELSE IF';
+      }
       $export[$plugin] = $this->predicate->export();
     }
     return $export + parent::exportChildren('DO');
+  }
+
+  protected function exportFlat() {
+    return TRUE;
   }
 
   public function dependencies() {
@@ -478,19 +502,6 @@ class RulesConditionalIf extends RulesConditionalBranchPlugin {
       $modules += array_flip($this->predicate->dependencies());
     }
     return array_keys($modules);
-  }
-}
-
-/**
- * The "else if" clause.
- */
-class RulesConditionalElseIf extends RulesConditionalIf {
-  protected $itemName = 'else if';
-
-  protected function checkSiblings() {
-    if (!($sibling = $this->getPreviousSibling()) || !$sibling instanceof RulesConditionalIf) {
-      throw new RulesIntegrityException(t('The conditional "%plugin" must be preceded by "if".', array('%plugin' => $this->plugin())), $this);
-    }
   }
 }
 

@@ -115,14 +115,6 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
     if (isset($this->predicate)) {
       // Build default content.
       $content = parent::buildContent();
-      // Build label.
-      $content['label']['#type'] = 'markup';
-      unset($content['label']['#title']);
-      $info = $this->element->pluginInfo();
-      $content['label']['#markup'] = t('@plugin: @label', array(
-        '@plugin' => isset($info['label']) ? $info['label'] : drupal_ucfirst($this->element->plugin()),
-        '@label' => $this->predicate->label(),
-      ));
       // Build parameter description from predicate.
       $predicateContent = $this->predicate->buildContent();
       if (isset($predicateContent['description']['parameter'])) {
