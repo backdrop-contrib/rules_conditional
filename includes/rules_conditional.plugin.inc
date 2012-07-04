@@ -73,6 +73,53 @@ abstract class RulesConditionalPlugin extends RulesContainerPlugin implements Ru
     return array();
   }
 
+  public function providesVariables() {
+    $provides = parent::providesVariables();
+    if ($this->isRoot()) {
+      return $provides;
+    }
+
+    // Collect variables.
+    $hasDefault = FALSE;
+    $childVariables = array();
+    /** @var $child RulesConditionalBranchPlugin */
+    foreach ($this->children as $child) {
+      $hasDefault = $hasDefault || $child->isDefault();
+      if ($childProvides = $child->providesVariables()) {
+        $childVariables[] = $childProvides;
+      }
+    }
+
+    if ($hasDefault) {
+      // Collect intersection of variable names.
+      $names = NULL;
+      foreach ($childVariables as $variables) {
+        $newNames = array_keys($variables);
+        $names = isset($names) ? array_intersect($names, $newNames) : $newNames;
+      }
+      // Add variables.
+      foreach ($names as $name) {
+        // Determine if variable types are consistent.
+        $type = NULL;
+        foreach ($childVariables as $variables) {
+          if (isset($type) && $type != $variables[$name]['type']) {
+            continue 2;
+          }
+          else {
+            $type = $variables[$name]['type'];
+          }
+        }
+        // Add compatible variable.
+        if (isset($type)) {
+          $lastVariables = end($childVariables);
+          $provides[$name] = $lastVariables[$name];
+        }
+      }
+    }
+
+    return $provides;
+  }
+
   /**
    * Adds a branch element.
    */
@@ -152,10 +199,32 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
     return 'RulesConditionalPlugin';
   }
 
+  public function providesVariables() {
+    $provides = parent::providesVariables();
+    if (!$this->isRoot()) {
+      foreach ($this->children as $action) {
+        $provides += $action->providesVariables();
+      }
+    }
+    return $provides;
+  }
+
+  /**
+   * Determines whether this branch is default, i.e. covers the remainder of
+   * conditions outside of all non-default branches inside the conditional.
+   */
+  public function isDefault() {
+    return FALSE;
+  }
+
   /**
    * Determines whether this branch can be evaluated.
+   *
+   * Non-default plugins should override this method.
    */
-  abstract public function canEvaluate(RulesState $state);
+  public function canEvaluate(RulesState $state) {
+    return $this->isDefault();
+  }
 
   /**
    * Gets the previous sibling element.
@@ -448,10 +517,7 @@ class RulesConditionalElse extends RulesConditionalBranchPlugin {
     }
   }
 
-  /**
-   * Determines whether this branch can be evaluated.
-   */
-  public function canEvaluate(RulesState $state) {
+  public function isDefault() {
     return TRUE;
   }
 }
@@ -688,6 +754,10 @@ class RulesConditionalDefaultCase extends RulesConditionalCase {
     if (!$this->getPreviousSibling()) {
       throw new RulesIntegrityException(t('The switch "%plugin" must be preceded by "case".', array('%plugin' => $this->plugin())), $this);
     }
+  }
+
+  public function isDefault() {
+    return TRUE;
   }
 
   /**
