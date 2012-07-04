@@ -550,6 +550,11 @@ class RulesConditionalSwitch extends RulesConditionalPlugin {
 class RulesConditionalCase extends RulesConditionalBranchPlugin {
   protected $itemName = 'case';
 
+  /**
+   * @var RulesPlugin
+   */
+  protected $condition;
+
   public function __construct($value = NULL, $fallThrough = FALSE, $valueIsSelector = FALSE) {
     parent::__construct();
     if (isset($value)) {
@@ -561,6 +566,11 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
       }
       $this->settings['fall_through'] = $fallThrough;
     }
+  }
+
+  protected function setUp() {
+    parent::setUp();
+    $this->setUpCondition();
   }
 
   public function getCompatibleConditionalClass() {
@@ -590,6 +600,45 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
     return $parameterInfo;
   }
 
+  public function stateVariables($element = NULL) {
+    $this->forceSetUp();
+    if (!isset($element) || $element === $this->condition) {
+      return parent::stateVariables();
+    }
+    else {
+      // Add assertions from the condition.
+      $variables = parent::stateVariables($element);
+      if (isset($this->condition) && $assertions = $this->condition->call('variableInfoAssertions')) {
+        $variables = RulesData::addMetadataAssertions($variables, $assertions);
+      }
+      return $variables;
+    }
+  }
+
+  protected function setUpCondition() {
+    if (!isset($this->condition) && isset($this->parent)) {
+      // Prepare settings for 'data_is' condition.
+      $settings = array(
+        'data:select' => $this->parent->settings['data:select'],
+        'op' => '==',
+      );
+      if (isset($this->settings['value:select'])) {
+        $settings['value:select'] = $this->settings['value:select'];
+      }
+      elseif (isset($this->settings['value'])) {
+        $settings['value'] = $this->settings['value'];
+      }
+      else {
+        // Abort if settings are incomplete.
+        return;
+      }
+      // Set up 'data_is'.
+      $this->condition = rules_condition('data_is', $settings);
+      $this->condition->parent = $this;
+      $this->condition->processSettings();
+    }
+  }
+
   /**
    * Returns whether this case should fall through.
    */
@@ -601,21 +650,8 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
    * Determines whether this branch can be evaluated.
    */
   public function canEvaluate(RulesState $state) {
-    // Prepare settings for 'data_is' condition.
-    $settings = array(
-      'data:select' => $this->parent->settings['data:select'],
-      'op' => '==',
-    );
-    if (isset($this->settings['value:select'])) {
-      $settings['value:select'] = $this->settings['value:select'];
-    }
-    else {
-      $settings['value'] = $this->settings['value'];
-    }
-    // Evaluate 'data_is'.
-    $condition = rules_condition('data_is', $settings);
-    $condition->parent = $this;
-    return $condition->evaluate($state);
+    $this->forceSetUp();
+    return $this->condition->evaluate($state);
   }
 
   protected function importChildren($export, $key = NULL) {
@@ -624,6 +660,10 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
 
   protected function exportChildren($key = NULL) {
     return parent::exportChildren('DO');
+  }
+
+  public function resetInternalCache() {
+    $this->condition = NULL;
   }
 }
 
