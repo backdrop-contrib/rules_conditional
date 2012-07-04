@@ -98,21 +98,23 @@ abstract class RulesConditionalPlugin extends RulesContainerPlugin implements Ru
         $names = isset($names) ? array_intersect($names, $newNames) : $newNames;
       }
       // Add variables.
-      foreach ($names as $name) {
-        // Determine if variable types are consistent.
-        $type = NULL;
-        foreach ($childVariables as $variables) {
-          if (isset($type) && $type != $variables[$name]['type']) {
-            continue 2;
+      if (isset($names)) {
+        foreach ($names as $name) {
+          // Determine if variable types are consistent.
+          $type = NULL;
+          foreach ($childVariables as $variables) {
+            if (isset($type) && $type != $variables[$name]['type']) {
+              continue 2;
+            }
+            else {
+              $type = $variables[$name]['type'];
+            }
           }
-          else {
-            $type = $variables[$name]['type'];
+          // Add compatible variable.
+          if (isset($type)) {
+            $lastVariables = end($childVariables);
+            $provides[$name] = $lastVariables[$name];
           }
-        }
-        // Add compatible variable.
-        if (isset($type)) {
-          $lastVariables = end($childVariables);
-          $provides[$name] = $lastVariables[$name];
         }
       }
     }
@@ -152,6 +154,15 @@ abstract class RulesConditionalPlugin extends RulesContainerPlugin implements Ru
     $modules = array('rules_conditional' => 1);
     $modules += array_flip(parent::dependencies());
     return array_keys($modules);
+  }
+
+  protected function exportSettings() {
+    $export = parent::exportSettings();
+    // Remove provided variables as plugin is only a container.
+    if (isset($export['PROVIDE'])) {
+      unset($export['PROVIDE']);
+    }
+    return $export;
   }
 }
 
@@ -276,6 +287,23 @@ abstract class RulesConditionalBranchPlugin extends RulesActionContainer impleme
     $modules = array('rules_conditional' => 1);
     $modules += array_flip(parent::dependencies());
     return array_keys($modules);
+  }
+
+  protected function importChildren($export, $key = NULL) {
+    parent::importChildren($export, 'DO');
+  }
+
+  protected function exportChildren($key = NULL) {
+    return parent::exportChildren('DO');
+  }
+
+  protected function exportSettings() {
+    $export = parent::exportSettings();
+    // Remove provided variables as plugin is only a container.
+    if (isset($export['PROVIDE'])) {
+      unset($export['PROVIDE']);
+    }
+    return $export;
   }
 }
 
@@ -731,14 +759,6 @@ class RulesConditionalCase extends RulesConditionalBranchPlugin {
     return $this->condition->evaluate($state);
   }
 
-  protected function importChildren($export, $key = NULL) {
-    parent::importChildren($export, 'DO');
-  }
-
-  protected function exportChildren($key = NULL) {
-    return parent::exportChildren('DO');
-  }
-
   public function resetInternalCache() {
     $this->condition = NULL;
   }
@@ -776,13 +796,5 @@ class RulesConditionalDefaultCase extends RulesConditionalCase {
    */
   public function canEvaluate(RulesState $state) {
     return TRUE;
-  }
-
-  protected function importChildren($export, $key = NULL) {
-    RulesContainerPlugin::importChildren($export, $key);
-  }
-
-  protected function exportChildren($key = NULL) {
-    return RulesContainerPlugin::exportChildren($key);
   }
 }
