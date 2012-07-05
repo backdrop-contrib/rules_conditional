@@ -356,6 +356,20 @@ abstract class RulesConditionalPredicateElement extends RulesConditionalElement 
     return $array;
   }
 
+  public function label() {
+    $text = '@plugin';
+    $variables = array('@plugin' => $this->pluginLabel());
+    if (isset($this->predicate)) {
+      $text = '@plugin: @label';
+      $variables['@label'] = $this->predicate->label();
+    }
+    return t($text, $variables);
+  }
+
+  public function pluginLabel() {
+    return parent::label();
+  }
+
   public function integrityCheck() {
     if (!isset($this->predicate)) {
       throw new RulesIntegrityException(t('The conditional "%plugin" does not have a valid predicate.', array('%plugin' => $this->plugin())), $this);
@@ -507,23 +521,14 @@ class RulesConditional extends RulesConditionalContainer {
 class RulesConditionalIf extends RulesConditionalPredicateElement {
   protected $itemName = 'if';
 
-  public function label() {
-    $text = '@plugin';
-    $variables = array();
-
+  public function pluginLabel() {
     $previous = $this->getPreviousSibling();
     if ($previous && $previous instanceof RulesConditionalIf) {
-      $variables['@plugin'] = t('(Else) If', array(), array('context' => 'conditional rules'));
+      return t('(Else) If', array(), array('context' => 'conditional rules'));
     }
     else {
-      $variables['@plugin'] = parent::label();
+      return parent::pluginLabel();
     }
-
-    if (isset($this->predicate)) {
-      $text = '@plugin: @label';
-      $variables['@label'] = $this->predicate->label();
-    }
-    return t($text, $variables);
   }
 
   protected function checkSiblings() {
