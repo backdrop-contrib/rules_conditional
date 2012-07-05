@@ -73,6 +73,18 @@ abstract class RulesConditionalContainer extends RulesContainerPlugin implements
     return array();
   }
 
+  /**
+   * Declares only parent state variables for individual branches.
+   *
+   * By definition, divergent branches should not have each other's variables.
+   */
+  protected function stateVariables($element = NULL) {
+    return $this->availableVariables();
+  }
+
+  /**
+   * Provides intersections of variables in all branches, at least one default.
+   */
   public function providesVariables() {
     $provides = parent::providesVariables();
     if ($this->isRoot()) {
