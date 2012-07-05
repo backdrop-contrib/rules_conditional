@@ -495,6 +495,10 @@ class RulesConditional extends RulesConditionalContainer {
     // Return no branch if none matched.
     return array();
   }
+
+  protected function exportFlat() {
+    return TRUE;
+  }
 }
 
 /**
@@ -591,6 +595,10 @@ class RulesConditionalElse extends RulesConditionalElement {
 
   protected function exportChildren($key = NULL) {
     return RulesContainerPlugin::exportChildren();
+  }
+
+  protected function exportFlat() {
+    return TRUE;
   }
 }
 
@@ -833,6 +841,10 @@ class RulesConditionalDefaultCase extends RulesConditionalCase {
 
   protected function exportChildren($key = NULL) {
     return RulesContainerPlugin::exportChildren();
+  }
+
+  protected function exportFlat() {
+    return TRUE;
   }
 }
 
