@@ -804,15 +804,11 @@ class RulesConditionalCase extends RulesConditionalElement {
 /**
  * Switch default case.
  */
-class RulesConditionalDefaultCase extends RulesConditionalCase {
+class RulesConditionalDefaultCase extends RulesConditionalElement {
   protected $itemName = 'default case';
 
   public function __construct() {
     parent::__construct();
-  }
-
-  public function pluginParameterInfo() {
-    return array();
   }
 
   protected function checkSiblings() {
@@ -825,13 +821,6 @@ class RulesConditionalDefaultCase extends RulesConditionalCase {
   }
 
   public function isDefault() {
-    return TRUE;
-  }
-
-  /**
-   * Determines whether this branch can be evaluated.
-   */
-  public function canEvaluate(RulesState $state) {
     return TRUE;
   }
 
