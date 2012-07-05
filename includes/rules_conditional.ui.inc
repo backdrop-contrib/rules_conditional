@@ -66,20 +66,19 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
 
   public function __construct(FacesExtendable $object) {
     parent::__construct($object);
-    $this->predicate = $this->property('predicate');
-    if (!is_object($this->predicate)) {
-      $this->predicate = NULL;
+    if (!$this->element instanceof RulesConditionalPredicateElement) {
       return;
     }
+    $this->predicate = $this->property('predicate');
   }
 
   /**
    * Delegates the form to the predicate.
    */
   public function form(&$form, &$form_state, $options = array()) {
-    $pathAddPredicate = RulesPluginUI::path($this->element->root()->name, 'add-predicate', $this->element->parentElement(), $this->element->plugin());
-    if (current_path() != $pathAddPredicate) {
+    if (empty($form_state['values']['form_id']) || $form_state['values']['form_id'] != 'rules_conditional_add_predicate') {
       // Redirect to extended path.
+      $pathAddPredicate = RulesPluginUI::path($this->element->root()->name, 'add-predicate', $this->element->parentElement(), $this->element->plugin());
       drupal_goto($pathAddPredicate);
     }
 
