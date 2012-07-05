@@ -423,7 +423,7 @@ abstract class RulesConditionalPredicateElement extends RulesConditionalElement 
    */
   protected function importPredicate($export, $key = NULL) {
     if (!isset($key)) {
-      $key = 'PREDICATE';
+      $key = strtoupper($this->plugin());
     }
     $predicate = rules_plugin_factory('condition');
     $this->setPredicate($predicate);
@@ -444,12 +444,16 @@ abstract class RulesConditionalPredicateElement extends RulesConditionalElement 
   protected function exportPredicate($key = NULL) {
     $export = array();
     if (!isset($key)) {
-      $key = 'PREDICATE';
+      $key = strtoupper($this->plugin());
     }
     if (isset($this->predicate)) {
       $export[$key] = $this->predicate->export();
     }
     return $export;
+  }
+
+  protected function exportFlat() {
+    return TRUE;
   }
 }
 
@@ -557,17 +561,10 @@ class RulesConditionalIf extends RulesConditionalPredicateElement {
    * Exports predicate.
    */
   protected function exportPredicate($key = NULL) {
-    if (!$this->getPreviousSibling()) {
-      $plugin = strtoupper($this->plugin());
+    if ($this->getPreviousSibling()) {
+      $key = 'ELSE IF';
     }
-    else {
-      $plugin = 'ELSE IF';
-    }
-    return parent::exportPredicate($plugin);
-  }
-
-  protected function exportFlat() {
-    return TRUE;
+    return parent::exportPredicate($key);
   }
 }
 
