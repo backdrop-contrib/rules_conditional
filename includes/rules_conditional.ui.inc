@@ -76,7 +76,9 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
    * Delegates the form to the predicate.
    */
   public function form(&$form, &$form_state, $options = array()) {
-    if (empty($form_state['values']['form_id']) || $form_state['values']['form_id'] != 'rules_conditional_add_predicate') {
+    $baseCount = count(explode('/', RulesPluginUI::$basePath));
+    $op = arg($baseCount + 2);
+    if ($op == 'add') {
       // Redirect to extended path.
       $pathAddPredicate = RulesPluginUI::path($this->element->root()->name, 'add-predicate', $this->element->parentElement(), $this->element->plugin());
       drupal_goto($pathAddPredicate);
