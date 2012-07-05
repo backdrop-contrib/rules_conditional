@@ -679,8 +679,8 @@ class RulesConditionalCase extends RulesConditionalElement {
     }
   }
 
-  protected function setUp() {
-    parent::setUp();
+  public function forceSetUp() {
+    parent::forceSetUp();
     $this->setUpCondition();
   }
 
