@@ -5,6 +5,11 @@
  */
 
 /**
+ * Maximum number of loop iterations (effectively infinite).
+ */
+define('RULES_CONDITIONAL_MAX_ITERATIONS', 65535);
+
+/**
  * Implements hook_rules_ui_menu_alter().
  */
 function rules_conditional_rules_ui_menu_alter(&$items, $base_path, $base_count) {

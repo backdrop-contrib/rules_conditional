@@ -845,5 +845,16 @@ class RulesConditionalDefaultCase extends RulesConditionalElement {
 class RulesConditionalWhile extends RulesConditionalPredicateElement {
   protected $itemName = 'while';
 
-  // TODO
+  public function providesVariables() {
+    return array();
+  }
+
+  public function evaluate(RulesState $state) {
+    $iteration = 0;
+    $maxIterations = variable_get('rules_conditional_max_iterations', RULES_CONDITIONAL_MAX_ITERATIONS);
+    while ($iteration < $maxIterations && $this->canEvaluate($state)) {
+      parent::evaluate($state);
+      $iteration ++;
+    }
+  }
 }
