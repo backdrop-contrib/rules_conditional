@@ -840,7 +840,7 @@ class RulesConditionalDefaultCase extends RulesConditionalElement {
 }
 
 /**
- * While execution statement.
+ * While loop.
  */
 class RulesConditionalWhile extends RulesConditionalPredicateElement {
   protected $itemName = 'while';
@@ -853,8 +853,17 @@ class RulesConditionalWhile extends RulesConditionalPredicateElement {
     $iteration = 0;
     $maxIterations = variable_get('rules_conditional_max_iterations', RULES_CONDITIONAL_MAX_ITERATIONS);
     while ($iteration < $maxIterations && $this->canEvaluate($state)) {
-      parent::evaluate($state);
+      // Use a separate state so variables are available in the loop only.
+      $clonedState = clone $state;
+      parent::evaluate($clonedState);
       $iteration ++;
+
+      // Retrieve variables.
+      foreach ($state->variables as $key => &$value) {
+        if (array_key_exists($key, $clonedState->variables)) {
+          $value = $clonedState->variables[$key];
+        }
+      }
     }
   }
 }
