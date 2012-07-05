@@ -98,9 +98,8 @@ abstract class RulesConditionalContainer extends RulesContainerPlugin implements
         /** @var $child RulesConditionalElement */
         foreach ($this->children as $child) {
           $hasDefault = $hasDefault || $child->isDefault();
-          if ($childProvides = $child->providesVariables()) {
-            $childVariables[] = $childProvides;
-          }
+          $childProvides = $child->providesVariables();
+          $childVariables[] = $childProvides ? $childProvides : array();
         }
 
         if ($hasDefault) {
