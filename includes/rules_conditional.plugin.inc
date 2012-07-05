@@ -19,6 +19,8 @@ abstract class RulesConditionalContainer extends RulesContainerPlugin implements
    */
   protected $fluentElement;
 
+  protected $providesVariables;
+
   public function label() {
     $info = $this->pluginInfo();
     $label = isset($info['label']) ? $info['label'] : t('unlabeled');
@@ -86,52 +88,53 @@ abstract class RulesConditionalContainer extends RulesContainerPlugin implements
    * Provides intersections of variables in all branches, at least one default.
    */
   public function providesVariables() {
-    $provides = parent::providesVariables();
-    if ($this->isRoot()) {
-      return $provides;
-    }
+    if (!isset($this->providesVariables)) {
+      $this->providesVariables = parent::providesVariables();
 
-    // Collect variables.
-    $hasDefault = FALSE;
-    $childVariables = array();
-    /** @var $child RulesConditionalElement */
-    foreach ($this->children as $child) {
-      $hasDefault = $hasDefault || $child->isDefault();
-      if ($childProvides = $child->providesVariables()) {
-        $childVariables[] = $childProvides;
-      }
-    }
-
-    if ($hasDefault) {
-      // Collect intersection of variable names.
-      $names = NULL;
-      foreach ($childVariables as $variables) {
-        $newNames = array_keys($variables);
-        $names = isset($names) ? array_intersect($names, $newNames) : $newNames;
-      }
-      // Add variables.
-      if (isset($names)) {
-        foreach ($names as $name) {
-          // Determine if variable types are consistent.
-          $type = NULL;
-          foreach ($childVariables as $variables) {
-            if (isset($type) && $type != $variables[$name]['type']) {
-              continue 2;
-            }
-            else {
-              $type = $variables[$name]['type'];
-            }
+      if (!$this->isRoot()) {
+        // Collect variables.
+        $hasDefault = FALSE;
+        $childVariables = array();
+        /** @var $child RulesConditionalElement */
+        foreach ($this->children as $child) {
+          $hasDefault = $hasDefault || $child->isDefault();
+          if ($childProvides = $child->providesVariables()) {
+            $childVariables[] = $childProvides;
           }
-          // Add compatible variable.
-          if (isset($type)) {
-            $lastVariables = end($childVariables);
-            $provides[$name] = $lastVariables[$name];
+        }
+
+        if ($hasDefault) {
+          // Collect intersection of variable names.
+          $names = NULL;
+          foreach ($childVariables as $variables) {
+            $newNames = array_keys($variables);
+            $names = isset($names) ? array_intersect($names, $newNames) : $newNames;
+          }
+          // Add variables.
+          if (isset($names)) {
+            foreach ($names as $name) {
+              // Determine if variable types are consistent.
+              $type = NULL;
+              foreach ($childVariables as $variables) {
+                if (isset($type) && $type != $variables[$name]['type']) {
+                  continue 2;
+                }
+                else {
+                  $type = $variables[$name]['type'];
+                }
+              }
+              // Add compatible variable.
+              if (isset($type)) {
+                $lastVariables = end($childVariables);
+                $this->providesVariables[$name] = $lastVariables[$name];
+              }
+            }
           }
         }
       }
     }
 
-    return $provides;
+    return $this->providesVariables;
   }
 
   /**
@@ -157,6 +160,11 @@ abstract class RulesConditionalContainer extends RulesContainerPlugin implements
       unset($export['PROVIDE']);
     }
     return $export;
+  }
+
+  public function resetInternalCache() {
+    parent::resetInternalCache();
+    $this->providesVariables = NULL;
   }
 }
 
