@@ -290,6 +290,129 @@ abstract class RulesConditionalElement extends RulesActionContainer implements R
 }
 
 /**
+ * Base conditional element that uses a predicate.
+ */
+abstract class RulesConditionalPredicateElement extends RulesConditionalElement {
+  /**
+   * @var RulesPlugin
+   */
+  protected $predicate;
+
+  public function __construct($predicate = NULL, $settings = array()) {
+    parent::__construct();
+    if (isset($predicate)) {
+      $predicate = is_object($predicate) && $predicate instanceof RulesConditionInterface ? $predicate : rules_condition($predicate, $settings);
+      $this->setPredicate($predicate);
+    }
+  }
+
+  /**
+   * Sets a condition as predicate.
+   */
+  protected function setPredicate($predicate) {
+    $this->predicate = $predicate;
+    $this->predicate->parent = $this;
+    // Set up variables with the new parent.
+    $this->resetInternalCache();
+  }
+
+  public function resetInternalCache() {
+    parent::resetInternalCache();
+    if (isset($this->predicate)) {
+      $this->predicate->resetInternalCache();
+    }
+  }
+
+  public function __sleep() {
+    $array = parent::__sleep();
+    $array['predicate'] = 'predicate';
+    return $array;
+  }
+
+  public function integrityCheck() {
+    if (!isset($this->predicate)) {
+      throw new RulesIntegrityException(t('The conditional "%plugin" does not have a valid predicate.', array('%plugin' => $this->plugin())), $this);
+    }
+    parent::integrityCheck();
+    return $this;
+  }
+
+  /**
+   * Adds predicate assertions to state.
+   */
+  protected function stateVariables($element = NULL) {
+    if (!isset($element) || $element === $this->predicate) {
+      return parent::stateVariables();
+    }
+    else {
+      // Add assertions from the predicate.
+      $variables = parent::stateVariables($element);
+      if (isset($this->predicate) && $assertions = $this->predicate->call('variableInfoAssertions')) {
+        $variables = RulesData::addMetadataAssertions($variables, $assertions);
+      }
+      return $variables;
+    }
+  }
+
+  public function dependencies() {
+    $modules = array_flip(parent::dependencies());
+    if (isset($this->predicate)) {
+      $modules += array_flip($this->predicate->dependencies());
+    }
+    return array_keys($modules);
+  }
+
+  /**
+   * Evaluates the predicate.
+   */
+  public function canEvaluate(RulesState $state) {
+    return $this->predicate->evaluate($state);
+  }
+
+  /**
+   * Imports predicate.
+   */
+  protected function importChildren($export, $key = NULL) {
+    $this->importPredicate($export);
+    parent::importChildren($export, 'DO');
+  }
+
+  /**
+   * Imports predicate.
+   */
+  protected function importPredicate($export, $key = NULL) {
+    if (!isset($key)) {
+      $key = 'PREDICATE';
+    }
+    $predicate = rules_plugin_factory('condition');
+    $this->setPredicate($predicate);
+    $predicate->import($export[$key]);
+  }
+
+  /**
+   * Exports predicate with actions.
+   */
+  protected function exportChildren($key = NULL) {
+    $export = $this->exportPredicate();
+    return $export + parent::exportChildren('DO');
+  }
+
+  /**
+   * Exports predicate.
+   */
+  protected function exportPredicate($key = NULL) {
+    $export = array();
+    if (!isset($key)) {
+      $key = 'PREDICATE';
+    }
+    if (isset($this->predicate)) {
+      $export[$key] = $this->predicate->export();
+    }
+    return $export;
+  }
+}
+
+/**
  * Default if-else conditional statement.
  *
  * @method RulesConditional if() if($predicate, array $settings = array()) Adds an "if" statement.
@@ -350,44 +473,8 @@ class RulesConditional extends RulesConditionalContainer {
 /**
  * The "if" clause.
  */
-class RulesConditionalIf extends RulesConditionalElement {
+class RulesConditionalIf extends RulesConditionalPredicateElement {
   protected $itemName = 'if';
-
-  /**
-   * @var RulesPlugin
-   */
-  protected $predicate;
-
-  public function __construct($predicate = NULL, $settings = array()) {
-    parent::__construct();
-    if (isset($predicate)) {
-      $predicate = is_object($predicate) && $predicate instanceof RulesConditionInterface ? $predicate : rules_condition($predicate, $settings);
-      $this->setPredicate($predicate);
-    }
-  }
-
-  /**
-   * Sets a condition as predicate.
-   */
-  protected function setPredicate($predicate) {
-    $this->predicate = $predicate;
-    $this->predicate->parent = $this;
-    // Set up variables with the new parent.
-    $this->resetInternalCache();
-  }
-
-  public function resetInternalCache() {
-    parent::resetInternalCache();
-    if (isset($this->predicate)) {
-      $this->predicate->resetInternalCache();
-    }
-  }
-
-  public function __sleep() {
-    $array = parent::__sleep();
-    $array['predicate'] = 'predicate';
-    return $array;
-  }
 
   public function label() {
     $text = '@plugin';
@@ -408,14 +495,6 @@ class RulesConditionalIf extends RulesConditionalElement {
     return t($text, $variables);
   }
 
-  public function integrityCheck() {
-    if (!isset($this->predicate)) {
-      throw new RulesIntegrityException(t('The conditional "%plugin" does not have a valid predicate.', array('%plugin' => $this->plugin())), $this);
-    }
-    parent::integrityCheck();
-    return $this;
-  }
-
   protected function checkSiblings() {
     $previous = $this->getPreviousSibling();
     if ($previous && !$previous instanceof RulesConditionalIf) {
@@ -424,80 +503,35 @@ class RulesConditionalIf extends RulesConditionalElement {
   }
 
   /**
-   * Adds predicate assertions to state.
-   */
-  protected function stateVariables($element = NULL) {
-    if (!isset($element) || $element === $this->predicate) {
-      return parent::stateVariables();
-    }
-    else {
-      // Add assertions from the predicate.
-      $variables = parent::stateVariables($element);
-      if (isset($this->predicate) && $assertions = $this->predicate->call('variableInfoAssertions')) {
-        $variables = RulesData::addMetadataAssertions($variables, $assertions);
-      }
-      return $variables;
-    }
-  }
-
-  /**
-   * Determines whether this branch can be evaluated.
-   */
-  public function canEvaluate(RulesState $state) {
-    return $this->evaluateCondition($state);
-  }
-
-  /**
-   * Evaluates the condition.
-   */
-  public function evaluateCondition(RulesState $state) {
-    return $this->predicate->evaluate($state);
-  }
-
-  /**
    * Imports predicate.
    */
-  protected function importChildren($export, $key = NULL) {
+  protected function importPredicate($export, $key = NULL) {
     $plugin = strtoupper($this->plugin());
     $pluginInfo = $this->pluginInfo();
     $keys = !empty($pluginInfo['import keys']) ? $pluginInfo['import keys'] : array($plugin);
     foreach ($keys as $key) {
       if (isset($export[$key])) {
-        $predicate = rules_plugin_factory('condition');
-        $this->setPredicate($predicate);
-        $predicate->import($export[$key]);
+        parent::importPredicate($export, $key);
+        break;
       }
     }
-    parent::importChildren($export, 'DO');
   }
 
   /**
-   * Exports predicate with actions.
+   * Exports predicate.
    */
-  protected function exportChildren($key = NULL) {
-    $export = array();
-    if (isset($this->predicate)) {
-      if (!$this->getPreviousSibling()) {
-        $plugin = strtoupper($this->plugin());
-      }
-      else {
-        $plugin = 'ELSE IF';
-      }
-      $export[$plugin] = $this->predicate->export();
+  protected function exportPredicate($key = NULL) {
+    if (!$this->getPreviousSibling()) {
+      $plugin = strtoupper($this->plugin());
     }
-    return $export + parent::exportChildren('DO');
+    else {
+      $plugin = 'ELSE IF';
+    }
+    return parent::exportPredicate($plugin);
   }
 
   protected function exportFlat() {
     return TRUE;
-  }
-
-  public function dependencies() {
-    $modules = array_flip(parent::dependencies());
-    if (isset($this->predicate)) {
-      $modules += array_flip($this->predicate->dependencies());
-    }
-    return array_keys($modules);
   }
 }
 
@@ -522,6 +556,14 @@ class RulesConditionalElse extends RulesConditionalElement {
 
   public function isDefault() {
     return TRUE;
+  }
+
+  protected function importChildren($export, $key = NULL) {
+    RulesContainerPlugin::importChildren($export);
+  }
+
+  protected function exportChildren($key = NULL) {
+    return RulesContainerPlugin::exportChildren();
   }
 }
 
@@ -756,5 +798,13 @@ class RulesConditionalDefaultCase extends RulesConditionalCase {
    */
   public function canEvaluate(RulesState $state) {
     return TRUE;
+  }
+
+  protected function importChildren($export, $key = NULL) {
+    RulesContainerPlugin::importChildren($export);
+  }
+
+  protected function exportChildren($key = NULL) {
+    return RulesContainerPlugin::exportChildren();
   }
 }
