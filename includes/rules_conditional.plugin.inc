@@ -96,13 +96,21 @@ abstract class RulesConditionalContainer extends RulesContainerPlugin implements
         $hasDefault = FALSE;
         $childVariables = array();
         /** @var $child RulesConditionalElement */
+        $isEmpty = FALSE;
         foreach ($this->children as $child) {
           $hasDefault = $hasDefault || $child->isDefault();
-          $childProvides = $child->providesVariables();
-          $childVariables[] = $childProvides ? $childProvides : array();
+          if ($childProvides = $child->providesVariables()) {
+            $childVariables[] = $childProvides;
+          }
+          else {
+            // Mark as empty if any branch does not provide variables. This is
+            // to avoid having to perform intersections over empty sets.
+            $isEmpty = TRUE;
+            break;
+          }
         }
 
-        if ($hasDefault) {
+        if ($hasDefault && !$isEmpty) {
           // Collect intersection of variable names.
           $names = NULL;
           foreach ($childVariables as $variables) {
