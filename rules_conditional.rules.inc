@@ -75,5 +75,16 @@ function rules_conditional_rules_plugin_info() {
         ),
       ),
     ),
+    'while' => array(
+      'label' => t('While', array(), array('context' => 'conditional rules')),
+      'class' => 'RulesConditionalWhile',
+      'embeddable' => 'RulesActionContainer',
+      'conditional predicate' => TRUE,
+      'extenders' => array(
+        'RulesPluginUIInterface' => array(
+          'class' => 'RulesConditionalPredicateUI',
+        ),
+      ),
+    ),
   );
 }

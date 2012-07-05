@@ -808,3 +808,12 @@ class RulesConditionalDefaultCase extends RulesConditionalCase {
     return RulesContainerPlugin::exportChildren();
   }
 }
+
+/**
+ * While execution statement.
+ */
+class RulesConditionalWhile extends RulesConditionalPredicateElement {
+  protected $itemName = 'while';
+
+  // TODO
+}
