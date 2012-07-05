@@ -11,23 +11,15 @@ module_load_include('inc', 'rules', 'ui/ui.forms');
  * Provides menu callbacks to extend Rules UI for conditionals.
  */
 function _rules_conditional_rules_ui_menu_alter(&$items, $base_path, $base_count) {
-  // Use existing add/edit items as extension base.
+  // Use existing "add" menu item as extension base.
   $add_item = $items[$base_path . '/manage/%rules_config/add/%rules_element'];
 
-  // Extend all plugins with a predicate.
-  $extend_base = array(
+  // Extend "add".
+  $items[$base_path . '/manage/%rules_config/add-predicate/%rules_element'] = array(
+    'page arguments' => array('rules_conditional_add_predicate') + $add_item['page arguments'],
     'file' => 'includes/rules_conditional.rules_admin.inc',
     'file path' => drupal_get_path('module', 'rules_conditional'),
-  );
-  $cache = rules_get_cache();
-  foreach ($cache['plugin_info'] as $plugin => $info) {
-    if (!empty($info['conditional predicate'])) {
-      // Override "add".
-      $items[$base_path . '/manage/%rules_config/add-predicate/%rules_element'] = array(
-        'page arguments' => array('rules_conditional_add_predicate') + $add_item['page arguments'],
-      ) + $extend_base + $add_item;
-    }
-  }
+  ) + $add_item;
 }
 
 /**

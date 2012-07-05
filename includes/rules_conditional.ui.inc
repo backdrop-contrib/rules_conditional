@@ -16,9 +16,6 @@ class RulesConditionalPluginUI extends RulesContainerPluginUI {
       $elementChildrenTypes[$plugin] = $plugin;
     }
     foreach (rules_fetch_data('plugin_info') as $plugin => $info) {
-      if (!empty($info['conditional predicate']) && isset($ops['#links']['add_' . $plugin])) {
-        $ops['#links']['add_' . $plugin]['href'] = RulesPluginUI::path($this->element->root()->name, 'add-predicate', $this->element, $plugin);
-      }
       // Remove operations as specified in the plugin info.
       $remove = FALSE;
       if (!empty($info['conditional single']) && isset($elementChildrenTypes[$plugin])) {
@@ -70,7 +67,7 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
   public function __construct(FacesExtendable $object) {
     parent::__construct($object);
     $this->predicate = $this->property('predicate');
-    if (!is_object($this->predicate) || $this->predicate instanceof RulesContainerPlugin) {
+    if (!is_object($this->predicate)) {
       $this->predicate = NULL;
       return;
     }
@@ -80,6 +77,12 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
    * Delegates the form to the predicate.
    */
   public function form(&$form, &$form_state, $options = array()) {
+    $pathAddPredicate = RulesPluginUI::path($this->element->root()->name, 'add-predicate', $this->element->parentElement(), $this->element->plugin());
+    if (current_path() != $pathAddPredicate) {
+      // Redirect to extended path.
+      drupal_goto($pathAddPredicate);
+    }
+
     if (isset($this->predicate)) {
       // Build form for predicate.
       $form_state['rules_element'] = $this->predicate;
