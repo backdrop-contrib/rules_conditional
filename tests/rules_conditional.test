@@ -71,8 +71,8 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
   public function testInterceptMethod() {
     $message = 'Test magic method is intercepted.';
     try {
-      $conditional = new RulesConditionalTestStubContainer();
-      $conditional->test();
+      $container = new RulesConditionalTestStubContainer();
+      $container->test();
       $this->assert(FALSE, $message);
     }
     catch (Exception $ex) {
@@ -84,13 +84,13 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
    * Tests fluent interface.
    */
   public function testFluentInterface() {
-    $conditional = new RulesConditionalTestStubContainer();
-    $container1 = new RulesActionSet();
-    $conditional->fluent($container1)->action('drupal_message', array('message' => '[site:name]'));
-    $this->assertEqual(1, count($container1->elements()), 'Fluent interface adds action to the active element.');
-    $container2 = new RulesActionSet();
-    $conditional->fluent($container2)->action('drupal_message', array('message' => '[site:name]'));
-    $this->assertEqual(1, count($container1->elements()), 'Fluent interface does not add action to a previously active element.');
+    $container = new RulesConditionalTestStubContainer();
+    $actions1 = new RulesActionSet();
+    $container->fluent($actions1)->action('drupal_message', array('message' => '[site:name]'));
+    $this->assertEqual(1, count($actions1->elements()), 'Fluent interface adds action to the active element.');
+    $actions2 = new RulesActionSet();
+    $container->fluent($actions2)->action('drupal_message', array('message' => '[site:name]'));
+    $this->assertEqual(1, count($actions1->elements()), 'Fluent interface does not add action to a previously active element.');
   }
 
   /**
@@ -98,11 +98,11 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
    */
   public function testBranchSibling() {
     // Set up stub objects.
-    $conditional = new RulesConditionalTestStubContainer();
+    $container = new RulesConditionalTestStubContainer();
     $branch1 = new RulesConditionalTestStubElement();
-    $branch1->setParent($conditional);
+    $branch1->setParent($container);
     $branch2 = new RulesConditionalTestStubElement();
-    $branch2->setParent($conditional);
+    $branch2->setParent($container);
     $orphanBranch = new RulesConditionalTestStubElement();
 
     // Test obtaining siblings.
@@ -121,18 +121,18 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
    */
   public function testEvaluate() {
     // Set up stub objects.
-    $conditional = new RulesConditionalTestStubContainer();
+    $container = new RulesConditionalTestStubContainer();
     $branch = new RulesConditionalTestStubElement();
     $branch->action('rules_conditional_test_throw', array('message' => 'evaluate'))
-      ->setParent($conditional);
+      ->setParent($container);
     $defaultBranch = new RulesConditionalTestStubDefaultElement();
     $defaultBranch->action('rules_conditional_test_throw', array('message' => 'evaluate default'))
-      ->setParent($conditional);
+      ->setParent($container);
 
     // Evaluate an element.
-    $this->assertExecution('evaluate', $conditional, array(), 'Evaluating container evaluates elements.');
+    $this->assertExecution('evaluate', $container, array(), 'Evaluating container evaluates elements.');
     $branch->setPass(FALSE);
-    $this->assertExecution('evaluate default', $conditional, array(), 'Evaluating container evaluates default elements.');
+    $this->assertExecution('evaluate default', $container, array(), 'Evaluating container evaluates default elements.');
   }
 }
 
