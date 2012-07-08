@@ -19,8 +19,8 @@ function rules_conditional_test_rules_plugin_info() {
         ),
       ),
     ),
-    'stub conditional branch' => array(
-      'label' => 'Stub conditional branch',
+    'stub conditional element' => array(
+      'label' => 'Stub conditional element',
       'class' => 'RulesConditionalTestStubElement',
       'embeddable' => 'RulesActionContainer',
       'extenders' => array(

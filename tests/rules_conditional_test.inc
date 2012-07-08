@@ -43,10 +43,10 @@ class RulesConditionalTestStubContainer extends RulesConditionalContainer {
 }
 
 /**
- * Test branch.
+ * Test element.
  */
 class RulesConditionalTestStubElement extends RulesConditionalElement {
-  protected $itemName = 'stub conditional branch';
+  protected $itemName = 'stub conditional element';
 
   /**
    * Determines whether this branch can be evaluated.
