@@ -162,6 +162,52 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
     $branch2->setParent($container);
     $this->assertIdentical(array(), $container->providesVariables(), 'Container provides no variables if one branch provides none.');
   }
+
+  /**
+   * Tests the base predicate element.
+   */
+  public function testPredicateElement() {
+    $predicateElement = new RulesConditionalTestStubPredicateElement();
+
+    // Test integrity check.
+    $message = 'Predicate element does not validate without predicate.';
+    try {
+      $predicateElement->integrityCheck();
+      $this->fail($message);
+    }
+    catch (RulesIntegrityException $ex) {
+      $expectedExceptionMessage = t('The conditional "%plugin" does not have a valid predicate.', array('%plugin' => $predicateElement->plugin()));
+      $this->assertEqual($expectedExceptionMessage, $ex->getMessage(), $message);
+    }
+
+    // Test variable assertion using a field in a content type.
+    $this->drupalCreateContentType(array('type' => 'test'));
+    field_create_field(array(
+      'field_name' => 'field_test',
+      'type' => 'text',
+    ));
+    field_create_instance(array(
+      'field_name' => 'field_test',
+      'entity_type' => 'node',
+      'bundle' => 'test',
+    ));
+    $settings = array(
+      'type' => 'test',
+      'field_test' => array(LANGUAGE_NONE => array(array('value' => 'test value'))),
+    );
+    $node = $this->drupalCreateNode($settings);
+
+    $predicateElement = new RulesConditionalTestStubPredicateElement('data_is', array(
+      'data:select' => 'node:type',
+      'op' => '==',
+      'value' => 'test',
+    ));
+    $actionSet = rules_action_set(array('node' => array('type' => 'node', 'label' => 'Node')))
+      ->action($predicateElement->action('rules_conditional_test_throw', array(
+        'message:select' => 'node:field_test',
+      )));
+    $this->assertExecution('test value', $actionSet->integrityCheck(), array($node), 'Predicate element correctly adds predicate assertions to state.');
+  }
 }
 
 /**
