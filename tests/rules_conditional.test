@@ -134,6 +134,36 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
     $branch->setPass(FALSE);
     $this->assertExecution('evaluate default', $container, array(), 'Evaluating container evaluates default elements.');
   }
+
+  /**
+   * Tests container provided variables.
+   */
+  public function testProvidesVariables() {
+    $actionSet = rules_action_set();
+    $container = new RulesConditionalTestStubContainer();
+    $container->setParent($actionSet);
+    $textVariable = array('variable_added:var' => 'text', 'type' => 'text');
+    $mixedVariable1 = array('variable_added:var' => 'mixed', 'type' => 'text');
+    $mixedVariable2 = array('variable_added:var' => 'mixed', 'type' => 'token');
+
+    $branch1 = new RulesConditionalTestStubElement();
+    $branch1->action('variable_add', $textVariable)
+      ->setParent($container);
+    $this->assertIdentical(array(), $container->providesVariables(), 'Container does not provide variables without a default branch.');
+
+    $defaultBranch = new RulesConditionalTestStubDefaultElement();
+    $defaultBranch->action('variable_add', $textVariable)
+      ->setParent($container);
+    $this->assertIdentical(array('text'), array_keys($container->providesVariables()), 'Container provides common variables in complete branches.');
+
+    $branch1->action('variable_add', $mixedVariable1);
+    $defaultBranch->action('variable_add', $mixedVariable2);
+    $this->assertIdentical(array('text'), array_keys($container->providesVariables()), 'Container does not provide variables with mixed types.');
+
+    $branch2 = new RulesConditionalTestStubElement();
+    $branch2->setParent($container);
+    $this->assertIdentical(array(), $container->providesVariables(), 'Container provides no variables if one branch provides none.');
+  }
 }
 
 /**
