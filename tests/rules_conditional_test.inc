@@ -67,10 +67,6 @@ class RulesConditionalTestStubElement extends RulesConditionalElement {
   public function canEvaluate(RulesState $state) {
     return $this->pass;
   }
-
-  public function evaluate(RulesState $state) {
-    throw new Exception('evaluate');
-  }
 }
 
 /**
@@ -81,9 +77,5 @@ class RulesConditionalTestStubDefaultElement extends RulesConditionalElement {
 
   public function isDefault() {
     return TRUE;
-  }
-
-  public function evaluate(RulesState $state) {
-    throw new Exception('evaluate default');
   }
 }
