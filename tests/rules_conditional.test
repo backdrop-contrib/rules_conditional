@@ -68,57 +68,6 @@ class RulesConditionalFrameworkTestCase extends DrupalWebTestCase {
   }
 
   /**
-   * Tests branch add/remove methods.
-   */
-  public function testParentBranchOperation() {
-    // Set up stub objects.
-    $conditional = new RulesConditionalTestStubContainer();
-    $branch = new RulesConditionalTestStubElement();
-
-    // Add branch to conditional.
-    $conditional->addBranch($branch);
-    $iterator = $conditional->getIterator();
-    $this->assertEqual(1, count($iterator), 'Branch can be added to conditional.');
-    $this->assertIdentical($branch, $iterator->current(), 'Added branch is a child element of conditional.');
-
-    // Remove branch from conditional.
-    $conditional->removeBranch($branch);
-    $this->assertEqual(0, count($conditional->getIterator()), 'Branch can be removed from conditional.');
-  }
-
-  /**
-   * Tests setting a conditional as the parent of a branch.
-   */
-  public function testBranchSetParent() {
-    // Set up stub objects.
-    $conditional = new RulesConditionalTestStubContainer();
-    $branch = new RulesConditionalTestStubElement();
-
-    // Set conditional as parent of branch.
-    $branch->setParent($conditional);
-    $this->assertIdentical($conditional, $branch->parentElement(), 'Conditional can be set as parent of branch.');
-    $iterator = $conditional->getIterator();
-    $this->assertTrue(count($iterator) == 1 && $iterator->current() === $branch, 'Branch is added as a child element to the parent conditional.');
-
-    // Set another conditional as parent of branch.
-    $conditional2 = new RulesConditionalTestStubContainer();
-    $branch->setParent($conditional2);
-    $this->assertIdentical($conditional2, $branch->parentElement(), 'Branch parent can be changed.');
-    $this->assertEqual(0, count($conditional->getIterator()), 'Branch is removed from old parent.');
-
-    // Set an incompatible parent.
-    $message = 'Branch prevents incompatible parent from being set.';
-    try {
-      $incompatibleContainer = new RulesActionSet();
-      $branch->setParent($incompatibleContainer);
-      $this->assert(FALSE, $message);
-    }
-    catch (RulesEvaluationException $ex) {
-      $this->assert(TRUE, $message);
-    }
-  }
-
-  /**
    * Tests branch sibling methods.
    */
   public function testBranchSibling() {
