@@ -58,3 +58,10 @@ function rules_conditional_case($value, $fall_through = FALSE, $value_is_selecto
 function rules_conditional_default_case() {
   return new RulesConditionalDefaultCase();
 }
+
+/**
+ * Creates a "while".
+ */
+function rules_conditional_while($predicate, array $settings = array()) {
+  return new RulesConditionalWhile($predicate, $settings);
+}
