@@ -195,7 +195,7 @@ abstract class RulesConditionalElement extends RulesActionContainer implements R
    * @todo Remove once http://drupal.org/node/1671344 is resolved.
    */
   public function setParent(RulesContainerPlugin $parent) {
-    if ($this->parent == $parent) {
+    if ($this->parent === $parent) {
       return;
     }
     // Check parent class against the compatible class.
@@ -207,7 +207,7 @@ abstract class RulesConditionalElement extends RulesActionContainer implements R
       throw new RulesEvaluationException('The given container is incompatible with this element.', array(), $this, RulesLog::ERROR);
     }
 
-    if (isset($this->parent) && ($key = array_search($this, $this->parent->children)) !== FALSE) {
+    if (isset($this->parent) && ($key = array_search($this, $this->parent->children, TRUE)) !== FALSE) {
       // Remove element from any previous parent.
       unset($this->parent->children[$key]);
       $this->parent->resetInternalCache();
