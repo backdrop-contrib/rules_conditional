@@ -86,3 +86,10 @@ class RulesConditionalTestStubDefaultElement extends RulesConditionalElement {
     return TRUE;
   }
 }
+
+/**
+ * Test predicate element.
+ */
+class RulesConditionalTestStubPredicateElement extends RulesConditionalPredicateElement {
+  protected $itemName = 'stub conditional predicate element';
+}

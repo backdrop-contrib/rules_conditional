@@ -39,6 +39,16 @@ function rules_conditional_test_rules_plugin_info() {
         ),
       ),
     ),
+    'stub conditional predicate element' => array(
+      'label' => 'Stub predicate element',
+      'class' => 'RulesConditionalTestStubPredicateElement',
+      'embeddable' => 'RulesActionContainer',
+      'extenders' => array(
+        'RulesPluginUIInterface' => array(
+          'class' => 'RulesConditionalPredicateUI',
+        ),
+      ),
+    ),
   );
 }
 
