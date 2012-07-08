@@ -5,9 +5,35 @@
  */
 
 /**
+ * Base class for conditional rules testing.
+ */
+abstract class RulesConditionalBaseTestCase extends DrupalWebTestCase {
+  /**
+   * Asserts a test message from the execution of a rule configuration.
+   *
+   * @param $error
+   * @param RulesPlugin $config
+   * @param array $args
+   * @param string $message
+   */
+  protected function assertExecution($error, $config, array $args = array(), $message = '') {
+    if (empty($message)) {
+      $message = t('Message "@error" captured by executing rule configuration.', array($error));
+    }
+    try {
+      $config->executeByArgs($args);
+      $this->assert(FALSE, $message);
+    }
+    catch (RulesConditionalTestException $ex) {
+      $this->assertEqual($error, $ex->getMessage(), $message);
+    }
+  }
+}
+
+/**
  * Framework tests.
  */
-class RulesConditionalFrameworkTestCase extends DrupalWebTestCase {
+class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
   /**
    * Returns test info.
    */
@@ -94,7 +120,7 @@ class RulesConditionalFrameworkTestCase extends DrupalWebTestCase {
 /**
  * Default if-else tests.
  */
-class RulesConditionalTestCase extends DrupalWebTestCase {
+class RulesConditionalTestCase extends RulesConditionalBaseTestCase {
   /**
    * Returns test info.
    */
@@ -138,7 +164,7 @@ class RulesConditionalTestCase extends DrupalWebTestCase {
 /**
  * Switch tests.
  */
-class RulesConditionalSwitchTestCase extends DrupalWebTestCase {
+class RulesConditionalSwitchTestCase extends RulesConditionalBaseTestCase {
   /**
    * Returns test info.
    */
@@ -182,7 +208,7 @@ class RulesConditionalSwitchTestCase extends DrupalWebTestCase {
 /**
  * While tests.
  */
-class RulesConditionalWhileTestCase extends DrupalWebTestCase {
+class RulesConditionalWhileTestCase extends RulesConditionalBaseTestCase {
   /**
    * Returns test info.
    */
@@ -226,7 +252,7 @@ class RulesConditionalWhileTestCase extends DrupalWebTestCase {
 /**
  * UI tests.
  */
-class RulesConditionalUITestCase extends DrupalWebTestCase {
+class RulesConditionalUITestCase extends RulesConditionalBaseTestCase {
   /**
    * Returns test info.
    */
