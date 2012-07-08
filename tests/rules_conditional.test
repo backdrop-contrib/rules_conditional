@@ -180,6 +180,50 @@ class RulesConditionalSwitchTestCase extends DrupalWebTestCase {
 }
 
 /**
+ * While tests.
+ */
+class RulesConditionalWhileTestCase extends DrupalWebTestCase {
+  /**
+   * Returns test info.
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'While',
+      'description' => 'Test the while plugin.',
+      'group' => 'Conditional Rules',
+    );
+  }
+
+  /**
+   * Tests integrity check.
+   */
+  public function testIntegrityCheck() {
+    // TODO
+  }
+
+  /**
+   * Tests evaluation.
+   */
+  public function testEvaluate() {
+    // TODO
+  }
+
+  /**
+   * Tests exporting.
+   */
+  public function testExport() {
+    // TODO
+  }
+
+  /**
+   * Tests exporting.
+   */
+  public function testImport() {
+    // TODO
+  }
+}
+
+/**
  * UI tests.
  */
 class RulesConditionalUITestCase extends DrupalWebTestCase {
