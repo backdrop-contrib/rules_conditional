@@ -115,6 +115,25 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
     $this->assertNull($orphanBranch->getNextSibling(), 'Orphan branch has no next sibling.');
     $this->assertNull($orphanBranch->getPreviousSibling(), 'Orphan branch has no previous sibling.');
   }
+
+  /**
+   * Tests basic evaluation.
+   */
+  public function testEvaluate() {
+    // Set up stub objects.
+    $conditional = new RulesConditionalTestStubContainer();
+    $branch = new RulesConditionalTestStubElement();
+    $branch->action('rules_conditional_test_throw', array('message' => 'evaluate'))
+      ->setParent($conditional);
+    $defaultBranch = new RulesConditionalTestStubDefaultElement();
+    $defaultBranch->action('rules_conditional_test_throw', array('message' => 'evaluate default'))
+      ->setParent($conditional);
+
+    // Evaluate an element.
+    $this->assertExecution('evaluate', $conditional, array(), 'Evaluating container evaluates elements.');
+    $branch->setPass(FALSE);
+    $this->assertExecution('evaluate default', $conditional, array(), 'Evaluating container evaluates default elements.');
+  }
 }
 
 /**
