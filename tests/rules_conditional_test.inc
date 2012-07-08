@@ -58,6 +58,13 @@ class RulesConditionalTestStubElement extends RulesConditionalElement {
 
   public function __construct($pass = TRUE) {
     parent::__construct();
+    $this->setPass($pass);
+  }
+
+  /**
+   * Sets whether the element should pass.
+   */
+  public function setPass($pass) {
     $this->pass = $pass;
   }
 
