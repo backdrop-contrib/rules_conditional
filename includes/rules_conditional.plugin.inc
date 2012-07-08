@@ -461,6 +461,7 @@ abstract class RulesConditionalPredicateElement extends RulesConditionalElement 
  * Default if-else conditional statement.
  *
  * @method RulesConditional if() if($predicate, array $settings = array()) Adds an "if" statement.
+ * @method RulesConditional elseIf() elseIf($predicate, array $settings = array()) Adds an "else if" statement. This is an alias for self::if().
  * @method RulesConditional else() else() Adds an "else" statement.
  */
 class RulesConditional extends RulesConditionalContainer {
@@ -483,6 +484,13 @@ class RulesConditional extends RulesConditionalContainer {
     $this->fluentElement = $element = rules_conditional_if($predicate, $settings);
     $element->setParent($this);
     return $this;
+  }
+
+  /**
+   * Adds an "if" as an "else if" statement, for use with magic call.
+   */
+  protected function call_elseIf($predicate, array $settings = array()) {
+    return $this->call_if($predicate, $settings);
   }
 
   /**
