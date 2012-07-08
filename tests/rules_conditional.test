@@ -139,9 +139,7 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
    * Tests container provided variables.
    */
   public function testProvidesVariables() {
-    $actionSet = rules_action_set();
-    $container = new RulesConditionalTestStubContainer();
-    $container->setParent($actionSet);
+    rules_action_set()->action($container = new RulesConditionalTestStubContainer());
     $textVariable = array('variable_added:var' => 'text', 'type' => 'text');
     $mixedVariable1 = array('variable_added:var' => 'mixed', 'type' => 'text');
     $mixedVariable2 = array('variable_added:var' => 'mixed', 'type' => 'token');
