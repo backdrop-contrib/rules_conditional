@@ -23,7 +23,13 @@ class RulesConditionalTestStubContainer extends RulesConditionalContainer {
    *   An array of branches to evaluate.
    */
   protected function selectBranches(RulesState $state) {
-    // TODO: Implement selectBranches() method.
+    // Pick the first element to pass.
+    foreach ($this->children as $element) {
+      if ($element->canEvaluate($state)) {
+        return array($element);
+      }
+    }
+    return array();
   }
 
   /**
@@ -48,10 +54,36 @@ class RulesConditionalTestStubContainer extends RulesConditionalContainer {
 class RulesConditionalTestStubElement extends RulesConditionalElement {
   protected $itemName = 'stub conditional element';
 
+  protected $pass;
+
+  public function __construct($pass = TRUE) {
+    parent::__construct();
+    $this->pass = $pass;
+  }
+
   /**
    * Determines whether this branch can be evaluated.
    */
   public function canEvaluate(RulesState $state) {
-    // TODO: Implement canEvaluate() method.
+    return $this->pass;
+  }
+
+  public function evaluate(RulesState $state) {
+    throw new Exception('evaluate');
+  }
+}
+
+/**
+ * Test default element.
+ */
+class RulesConditionalTestStubDefaultElement extends RulesConditionalElement {
+  protected $itemName = 'stub conditional default element';
+
+  public function isDefault() {
+    return TRUE;
+  }
+
+  public function evaluate(RulesState $state) {
+    throw new Exception('evaluate default');
   }
 }
