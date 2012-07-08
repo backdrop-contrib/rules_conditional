@@ -22,7 +22,7 @@ abstract class RulesConditionalBaseTestCase extends DrupalWebTestCase {
     }
     try {
       $config->executeByArgs($args);
-      $this->assert(FALSE, $message);
+      $this->fail($message);
     }
     catch (RulesConditionalTestException $ex) {
       $this->assertEqual($error, $ex->getMessage(), $message);
@@ -73,7 +73,7 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
     try {
       $container = new RulesConditionalTestStubContainer();
       $container->test();
-      $this->assert(FALSE, $message);
+      $this->fail($message);
     }
     catch (Exception $ex) {
       $this->assertEqual('intercept', $ex->getMessage(), $message);
