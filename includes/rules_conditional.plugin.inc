@@ -296,7 +296,7 @@ abstract class RulesConditionalElement extends RulesActionContainer implements R
   protected function checkSiblings() {
     // Check a default element is the last.
     if ($this->isDefault() && $this->getNextSibling()) {
-      #throw new RulesIntegrityException(t('The "%plugin" cannot precede another element.', array('%plugin' => $this->plugin())), $this);
+      throw new RulesIntegrityException(t('The "%plugin" cannot precede another element.', array('%plugin' => $this->plugin())), $this);
     }
 
     $pluginInfo = $this->pluginInfo();
