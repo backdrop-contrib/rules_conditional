@@ -181,7 +181,6 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
     }
 
     // Test variable assertion using a field in a content type.
-    $this->drupalCreateContentType(array('type' => 'test'));
     field_create_field(array(
       'field_name' => 'field_test',
       'type' => 'text',
@@ -189,10 +188,10 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
     field_create_instance(array(
       'field_name' => 'field_test',
       'entity_type' => 'node',
-      'bundle' => 'test',
+      'bundle' => 'page',
     ));
     $settings = array(
-      'type' => 'test',
+      'type' => 'page',
       'field_test' => array(LANGUAGE_NONE => array(array('value' => 'test value'))),
     );
     $node = $this->drupalCreateNode($settings);
@@ -200,7 +199,7 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
     $predicateElement = new RulesConditionalTestStubPredicateElement('data_is', array(
       'data:select' => 'node:type',
       'op' => '==',
-      'value' => 'test',
+      'value' => 'page',
     ));
     $actionSet = rules_action_set(array('node' => array('type' => 'node', 'label' => 'Node')))
       ->action($predicateElement->action('rules_conditional_test_throw', array(
