@@ -132,6 +132,11 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
  * UI for supporting option lists in the case value.
  */
 class RulesConditionalCaseUI extends RulesConditionalPluginUI {
+  public function form(&$form, &$form_state, $options = array(), $iterator = NULL) {
+    $options['init'] = FALSE;
+    parent::form($form, $form_state, $options, $iterator);
+  }
+
   protected function getParameterForm($name, $info, $settings, &$mode) {
     $form = parent::getParameterForm($name, $info, $settings, $mode);
     if ($name == 'value' && $mode == 'input') {
