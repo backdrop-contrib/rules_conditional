@@ -407,7 +407,20 @@ class RulesConditionalUITestCase extends RulesConditionalBaseTestCase {
    * Tests RulesConditionalEmptyUI.
    */
   public function testEmptyUI() {
-    // TODO
+    // Create component.
+    $componentName = 'test';
+    $comp = rules_action_set();
+    $comp->component = TRUE;
+    $comp->integrityCheck()->save($componentName);
+
+    $componentPath = 'admin/config/workflow/rules/components';
+    RulesPluginUI::$basePath = $componentPath;
+    $managePath = RulesPluginUI::path($componentName);
+    $addPath = RulesPluginUI::path($componentName, 'add', $comp, 'stub conditional');
+
+    // Test adding with empty UI.
+    $this->drupalGet($addPath);
+    $this->assertUrl($managePath, array(), 'Adding via the empty UI redirects to the parent edit form.');
   }
 
   /**
