@@ -433,10 +433,6 @@ class RulesConditionalUITestCase extends RulesConditionalBaseTestCase {
         'type' => 'node',
         'label' => t('Node'),
       ),
-      'title' => array(
-        'type' => 'text',
-        'label' => t('Title'),
-      ),
     ));
     $comp->component = TRUE;
     $comp->integrityCheck()->save($componentName);
@@ -459,12 +455,11 @@ class RulesConditionalUITestCase extends RulesConditionalBaseTestCase {
 
     // Save the condition.
     $edit = array(
-      'parameter[data][settings][data:select]' => 'node:title',
+      'parameter[data][settings][data:select]' => 'node:type',
     );
     $this->drupalPost(NULL, $edit, t('Continue'));
-    $this->drupalPost(NULL, array(), t('Switch to data selection'));
     $edit = array(
-      'parameter[value][settings][value:select]' => 'title',
+      'parameter[value][settings][value]' => 'page',
     );
     $this->drupalPost(NULL, $edit, t('Save'));
 
@@ -474,9 +469,8 @@ class RulesConditionalUITestCase extends RulesConditionalBaseTestCase {
       ->action('rules_conditional_test_throw', array(
         'message' => 'evaluate predicate',
       ));
-    $title = 'test title';
-    $node = $this->drupalCreateNode(array('title' => $title));
-    $this->assertExecution('evaluate predicate', $comp, array($node, $title), 'Element created from predicate UI can be evaluated.');
+    $node = $this->drupalCreateNode();
+    $this->assertExecution('evaluate predicate', $comp, array($node), 'Element created from predicate UI can be evaluated.');
   }
 
   /**
@@ -512,10 +506,9 @@ class RulesConditionalUITestCase extends RulesConditionalBaseTestCase {
     $comp->elements()->current()
       ->elements()->current()
       ->action('rules_conditional_test_throw', array(
-        'message:select' => 'node:title',
+        'message' => 'evaluate case',
       ));
-    $title = 'test title';
-    $node = $this->drupalCreateNode(array('title' => $title, 'type' => 'page'));
-    $this->assertExecution($title, $comp, array($node), 'Case element created from case UI can be evaluated.');
+    $node = $this->drupalCreateNode();
+    $this->assertExecution('evaluate case', $comp, array($node), 'Case element created from case UI can be evaluated.');
   }
 }
