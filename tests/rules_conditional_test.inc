@@ -93,3 +93,17 @@ class RulesConditionalTestStubDefaultElement extends RulesConditionalElement {
 class RulesConditionalTestStubPredicateElement extends RulesConditionalPredicateElement {
   protected $itemName = 'stub conditional predicate element';
 }
+
+/**
+ * Test single element.
+ */
+class RulesConditionalTestStubSingleElement extends RulesConditionalElement {
+  protected $itemName = 'stub conditional single element';
+}
+
+/**
+ * Test dependent element.
+ */
+class RulesConditionalTestStubDependentElement extends RulesConditionalElement {
+  protected $itemName = 'stub conditional dependent element';
+}

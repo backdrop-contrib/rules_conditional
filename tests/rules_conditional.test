@@ -379,27 +379,28 @@ class RulesConditionalUITestCase extends RulesConditionalBaseTestCase {
     $componentPath = 'admin/config/workflow/rules/components';
     RulesPluginUI::$basePath = $componentPath;
     $managePath = RulesPluginUI::path($componentName);
-    $addPath = RulesPluginUI::path($componentName, 'add', $container, 'stub conditional default element');
+    $addSinglePath = RulesPluginUI::path($componentName, 'add', $container, 'stub conditional single element');
+    $addDependentPath = RulesPluginUI::path($componentName, 'add', $container, 'stub conditional dependent element');
 
     // Test 'conditional depends'.
     $this->drupalGet($managePath);
 
     // Check dependent element cannot be added.
-    $this->assertNoLinkByHref(url($addPath), 'Dependent plugin is unavailable to add.');
+    $this->assertNoLinkByHref(url($addDependentPath), 'Dependent plugin is unavailable to add.');
 
     // Add element and then check for link to add dependent element.
     $element = new RulesConditionalTestStubElement();
     $element->setParent($container);
     $comp->save();
     $this->drupalGet($managePath);
-    $this->assertLinkByHref(url($addPath), 0, 'Dependent plugin can be added on fulfilling prerequisite.');
+    $this->assertLinkByHref(url($addDependentPath), 0, 'Dependent plugin can be added on fulfilling prerequisite.');
 
     // Test 'conditional single'.
-    $element = new RulesConditionalTestStubDefaultElement();
+    $element = new RulesConditionalTestStubSingleElement();
     $element->setParent($container);
     $comp->save();
     $this->drupalGet($managePath);
-    $this->assertNoLinkByHref(url($addPath), 'Single plugins cannot be added more than once.');
+    $this->assertNoLinkByHref(url($addSinglePath), 'Single plugins cannot be added more than once.');
   }
 
   /**
