@@ -220,7 +220,7 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
    * Tests container provided variables.
    */
   public function testProvidesVariables() {
-    rules_action_set()->action($container = new RulesConditionalTestStubContainer());
+    rules_action_set(array())->action($container = new RulesConditionalTestStubContainer());
     $textVariable = array('variable_added:var' => 'text', 'type' => 'text');
     $mixedVariable1 = array('variable_added:var' => 'mixed', 'type' => 'text');
     $mixedVariable2 = array('variable_added:var' => 'mixed', 'type' => 'token');
@@ -431,7 +431,7 @@ class RulesConditionalUITestCase extends RulesConditionalBaseTestCase {
   public function testBaseUI() {
     // Create component.
     $componentName = 'base_test';
-    $comp = rules_action_set()
+    $comp = rules_action_set(array())
       ->action($container = new RulesConditionalTestStubContainer());
     $comp->component = TRUE;
     $comp->integrityCheck()->save($componentName);
@@ -469,7 +469,7 @@ class RulesConditionalUITestCase extends RulesConditionalBaseTestCase {
   public function testEmptyUI() {
     // Create component.
     $componentName = 'empty_test';
-    $comp = rules_action_set();
+    $comp = rules_action_set(array());
     $comp->component = TRUE;
     $comp->integrityCheck()->save($componentName);
 
