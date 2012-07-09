@@ -483,6 +483,39 @@ class RulesConditionalUITestCase extends RulesConditionalBaseTestCase {
    * Tests RulesConditionalCaseUI.
    */
   public function testCaseUI() {
-    // TODO
+    // Create component.
+    $componentName = 'test';
+    $comp = rules_action_set(array(
+      'node' => array(
+        'type' => 'node',
+        'label' => t('Node'),
+      ),
+    ))->action($switch = rules_conditional_switch('node:type'));
+    $comp->component = TRUE;
+    $comp->integrityCheck()->save($componentName);
+
+    $componentPath = 'admin/config/workflow/rules/components';
+    RulesPluginUI::$basePath = $componentPath;
+    $addPath = RulesPluginUI::path($componentName, 'add', $switch, 'case');
+
+    // Test adding a case.
+    $this->drupalGet($addPath);
+    $this->assertFieldByXPath("//select[@name='parameter[value][settings][value]']", NULL, 'Option case values are shown as select list.');
+    $edit = array(
+      'parameter[value][settings][value]' => 'page',
+    );
+    $this->drupalPost(NULL, $edit, t('Save'));
+
+    // Reload and execute component.
+    $comp = rules_config_load('test');
+    // Navigate to switch.
+    $comp->elements()->current()
+      ->elements()->current()
+      ->action('rules_conditional_test_throw', array(
+        'message:select' => 'node:title',
+      ));
+    $title = 'test title';
+    $node = $this->drupalCreateNode(array('title' => $title, 'type' => 'page'));
+    $this->assertExecution($title, $comp, array($node), 'Case element created from case UI can be evaluated.');
   }
 }
