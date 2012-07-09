@@ -827,6 +827,7 @@ class RulesConditionalCase extends RulesConditionalElement {
   }
 
   public function resetInternalCache() {
+    parent::resetInternalCache();
     $this->condition = NULL;
   }
 }
