@@ -470,10 +470,10 @@ class RulesConditionalUITestCase extends RulesConditionalBaseTestCase {
 
     // Reload and execute component.
     $comp = rules_config_load('test');
-    $predicateElement = $comp->elements()->current();
-    $predicateElement->action('rules_conditional_test_throw', array(
-      'message' => 'evaluate predicate',
-    ));
+    $comp->elements()->current()
+      ->action('rules_conditional_test_throw', array(
+        'message' => 'evaluate predicate',
+      ));
     $title = 'test title';
     $node = $this->drupalCreateNode(array('title' => $title));
     $this->assertExecution('evaluate predicate', $comp, array($node, $title), 'Element created from predicate UI can be evaluated.');
