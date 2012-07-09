@@ -300,8 +300,8 @@ abstract class RulesConditionalElement extends RulesActionContainer implements R
     }
 
     $pluginInfo = $this->pluginInfo();
+    // Check dependent element.
     if (!empty($pluginInfo['conditional depends'])) {
-      // Check dependent element.
       if (!($previous = $this->getPreviousSibling()) || !in_array($previous->plugin(), $pluginInfo['conditional depends'])) {
         $depends = $pluginInfo['conditional depends'];
         $list = t('"%plugin"', array('%plugin' => array_shift($depends)));
@@ -314,8 +314,8 @@ abstract class RulesConditionalElement extends RulesActionContainer implements R
         throw new RulesIntegrityException(t('The "%plugin" must be preceded by one of: !list.', array('%plugin' => $this->plugin(), '!list' => $list)), $this);
       }
     }
-    if (!empty($pluginInfo['conditional single'])) {
-      // Check single element.
+    // Check single element in a conditional container.
+    if (!$this->isRoot() && $this->parentElement() instanceof RulesConditionalContainer && !empty($pluginInfo['conditional single'])) {
       $plugin = $this->plugin();
       $previous = $this->getPreviousSibling();
       $next = $this->getNextSibling();
