@@ -117,6 +117,87 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
   }
 
   /**
+   * Tests integrity check.
+   */
+  public function testIntegrityCheck() {
+    $container = new RulesConditionalTestStubContainer();
+
+    $message = 'Dependent element does not validate without a required preceding element.';
+    $dependent = new RulesConditionalTestStubDependentElement();
+    $dependent->setParent($container);
+    try {
+      $dependent->integrityCheck();
+      $this->fail($message);
+    }
+    catch (RulesIntegrityException $ex) {
+      $element = new RulesConditionalTestStubElement();
+      $element->weight = -1;
+      $element->setParent($container);
+      $container->sortChildren();
+      $dependent->integrityCheck();
+      $this->pass($message);
+    }
+
+    $message = 'A single element does not validate if it occurs more than once in a conditional container.';
+    $single = new RulesConditionalTestStubSingleElement();
+    $single->setParent($container);
+    try {
+      $single->integrityCheck();
+      $single2 = new RulesConditionalTestStubSingleElement();
+      $single2->setParent($container);
+      try {
+        $single->integrityCheck();
+        $this->fail($message);
+      }
+      catch (RulesIntegrityException $ex) {
+        try {
+          $single2->integrityCheck();
+          $this->fail($message);
+        }
+        catch (RulesIntegrityException $ex) {
+          $single2->delete();
+          try {
+            $single->integrityCheck();
+            $this->pass($message);
+          }
+          catch (RulesIntegrityException $ex) {
+            $this->fail($message);
+          }
+        }
+      }
+    }
+    catch (RulesIntegrityException $ex) {
+      $this->fail($message);
+    }
+
+    $message = 'A default element does not validate if it precedes any element.';
+    $default = new RulesConditionalTestStubDefaultElement();
+    try {
+      $default->setParent($container);
+      $default->integrityCheck();
+      try {
+        $element = new RulesConditionalTestStubElement();
+        $element->setParent($container);
+        $default->integrityCheck();
+        $this->fail($message);
+      }
+      catch (RulesIntegrityException $ex) {
+        $element->delete();
+        try {
+          $default->integrityCheck();
+          $this->pass($message);
+        }
+        catch (RulesIntegrityException $ex) {
+          $this->fail($message);
+        }
+      }
+    }
+    catch (RulesIntegrityException $ex) {
+      $this->fail($message);
+    }
+  }
+
+  /**
    * Tests basic evaluation.
    */
   public function testEvaluate() {
@@ -225,13 +306,6 @@ class RulesConditionalTestCase extends RulesConditionalBaseTestCase {
   }
 
   /**
-   * Tests integrity check.
-   */
-  public function testIntegrityCheck() {
-    // TODO
-  }
-
-  /**
    * Tests evaluation.
    */
   public function testEvaluate() {
@@ -269,13 +343,6 @@ class RulesConditionalSwitchTestCase extends RulesConditionalBaseTestCase {
   }
 
   /**
-   * Tests integrity check.
-   */
-  public function testIntegrityCheck() {
-    // TODO
-  }
-
-  /**
    * Tests evaluation.
    */
   public function testEvaluate() {
@@ -310,13 +377,6 @@ class RulesConditionalWhileTestCase extends RulesConditionalBaseTestCase {
       'description' => 'Test the while plugin.',
       'group' => 'Conditional Rules',
     );
-  }
-
-  /**
-   * Tests integrity check.
-   */
-  public function testIntegrityCheck() {
-    // TODO
   }
 
   /**
