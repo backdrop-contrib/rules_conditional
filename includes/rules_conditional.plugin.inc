@@ -290,7 +290,43 @@ abstract class RulesConditionalElement extends RulesActionContainer implements R
     return $this;
   }
 
-  protected function checkSiblings() {}
+  /**
+   * Checks basic conditional element integrity.
+   */
+  protected function checkSiblings() {
+    // Check a default element is the last.
+    if ($this->isDefault() && $this->getNextSibling()) {
+      #throw new RulesIntegrityException(t('The "%plugin" cannot precede another element.', array('%plugin' => $this->plugin())), $this);
+    }
+
+    $pluginInfo = $this->pluginInfo();
+    if (!empty($pluginInfo['conditional depends'])) {
+      // Check dependent element.
+      if (!($previous = $this->getPreviousSibling()) || !in_array($previous->plugin(), $pluginInfo['conditional depends'])) {
+        $depends = $pluginInfo['conditional depends'];
+        $list = t('"%plugin"', array('%plugin' => array_shift($depends)));
+        foreach ($depends as $depend) {
+          $list = t('!preceding, "%plugin"', array(
+            '!preceding' => $list,
+            '%plugin' => $depend,
+          ));
+        }
+        throw new RulesIntegrityException(t('The "%plugin" must be preceded by one of: !list.', array('%plugin' => $this->plugin(), '!list' => $list)), $this);
+      }
+    }
+    if (!empty($pluginInfo['conditional single'])) {
+      // Check single element.
+      $plugin = $this->plugin();
+      $previous = $this->getPreviousSibling();
+      $next = $this->getNextSibling();
+      do {
+        if (($previous && $previous->plugin() == $plugin) || ($next && $next->plugin() == $plugin)) {
+          throw new RulesIntegrityException(t('The "%plugin" cannot occur more than once within the enclosing container.', array('%plugin' => $this->plugin())), $this);
+        }
+      }
+      while (($previous && $previous = $previous->getPreviousSibling()) || ($next && $next = $next->getNextSibling()));
+    }
+  }
 
   public function dependencies() {
     $modules = array('rules_conditional' => 1);
@@ -543,13 +579,6 @@ class RulesConditionalIf extends RulesConditionalPredicateElement {
     }
   }
 
-  protected function checkSiblings() {
-    $previous = $this->getPreviousSibling();
-    if ($previous && !$previous instanceof RulesConditionalIf) {
-      throw new RulesIntegrityException(t('The conditional "%plugin" cannot be preceded by any element other than "if".', array('%plugin' => $this->plugin())), $this);
-    }
-  }
-
   /**
    * Imports predicate.
    */
@@ -584,15 +613,6 @@ class RulesConditionalElse extends RulesConditionalElement {
 
   public function __construct() {
     parent::__construct();
-  }
-
-  protected function checkSiblings() {
-    if ($this->getNextSibling()) {
-      throw new RulesIntegrityException(t('The conditional "%plugin" cannot precede another element.', array('%plugin' => $this->plugin())), $this);
-    }
-    if (!($sibling = $this->getPreviousSibling()) || !$sibling instanceof RulesConditionalIf) {
-      throw new RulesIntegrityException(t('The conditional "%plugin" must be preceded by "if".', array('%plugin' => $this->plugin())), $this);
-    }
   }
 
   public function isDefault() {
@@ -819,15 +839,6 @@ class RulesConditionalDefaultCase extends RulesConditionalElement {
 
   public function __construct() {
     parent::__construct();
-  }
-
-  protected function checkSiblings() {
-    if ($this->getNextSibling()) {
-      throw new RulesIntegrityException(t('The switch "%plugin" cannot precede another element.', array('%plugin' => $this->plugin())), $this);
-    }
-    if (!$this->getPreviousSibling()) {
-      throw new RulesIntegrityException(t('The switch "%plugin" must be preceded by "case".', array('%plugin' => $this->plugin())), $this);
-    }
   }
 
   public function isDefault() {
