@@ -419,14 +419,19 @@ class RulesConditionalSwitchTestCase extends RulesConditionalBaseTestCase {
    * Tests exporting.
    */
   public function testExport() {
-    // TODO
+    $comp = $this->createTestComponent();
+    $comp->name = 'switch_test';
+    $export = $this->getFileContents('switch_test_export.txt');
+    $this->assertEqual($export, $comp->export(), 'Switch is correctly exported.');
   }
 
   /**
    * Tests importing.
    */
   public function testImport() {
-    // TODO
+    $export = $this->getFileContents('switch_test_export.txt');
+    $comp = entity_import('rules_config', $export);
+    $this->assert($this->doTestEvaluate($comp), 'Imported switch correctly evaluates.');
   }
 
   /**
