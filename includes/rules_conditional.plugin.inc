@@ -499,6 +499,7 @@ abstract class RulesConditionalPredicateElement extends RulesConditionalElement 
  * @method RulesConditional if() if($predicate, array $settings = array()) Adds an "if" statement.
  * @method RulesConditional elseIf() elseIf($predicate, array $settings = array()) Adds an "else if" statement. This is an alias for self::if().
  * @method RulesConditional else() else() Adds an "else" statement.
+ * @method RulesConditional action($name, array $settings = array()) Adds an action to the currently active statement. Pass arguments as rules_action() would need.
  */
 class RulesConditional extends RulesConditionalContainer {
   protected $itemName = 'conditional';
@@ -507,7 +508,7 @@ class RulesConditional extends RulesConditionalContainer {
    * Intercepts calls to "if" and "else".
    * @var array
    */
-  protected $interceptMethods = array('if', 'else');
+  protected $interceptMethods = array('if', 'elseIf', 'else');
 
   public function __construct() {
     parent::__construct();
