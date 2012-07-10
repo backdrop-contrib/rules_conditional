@@ -697,17 +697,12 @@ class RulesConditionalSwitch extends RulesConditionalContainer {
    */
   protected function selectBranches(RulesState $state) {
     $branches = array();
-    /** @var $case RulesConditionalCase */
+    // Collect all cases to be evaluated.
     $fallThrough = FALSE;
     foreach ($this->children as $case) {
-      if ($fallThrough || $case->canEvaluate($state)) {
+      /** @var $case RulesConditionalCase */
+      if ($case->canEvaluate($state)) {
         $branches[] = $case;
-        if (!$case->fallThrough()) {
-          break;
-        }
-        else {
-          $fallThrough = TRUE;
-        }
       }
     }
     return $branches;
@@ -733,6 +728,12 @@ class RulesConditionalCase extends RulesConditionalElement {
    */
   protected $condition;
 
+  /**
+   * Evaluated condition results.
+   * @var array
+   */
+  protected $conditionResultCache = array();
+
   public function __construct($settings = array(), $fallThrough = FALSE) {
     parent::__construct();
     if (isset($settings['value'])) {
@@ -742,6 +743,11 @@ class RulesConditionalCase extends RulesConditionalElement {
       $this->settings['value:select'] = $settings['value:select'];
     }
     $this->settings += array('fall_through' => $fallThrough);
+  }
+
+  public function __destruct() {
+    unset($this->condition);
+    unset($this->conditionResultCache);
   }
 
   public function forceSetUp() {
@@ -825,12 +831,27 @@ class RulesConditionalCase extends RulesConditionalElement {
    */
   public function canEvaluate(RulesState $state) {
     $this->forceSetUp();
-    return $this->condition->evaluate($state);
+    // Check if this element has fallen through.
+    if ($previous = $this->getPreviousSibling()) {
+      /** @var $previous self */
+      if ($previous instanceof self && $previous->fallThrough() && $previous->canEvaluate($state)) {
+        return TRUE;
+      }
+    }
+    // Evaluate condition for the given state once.
+    $this->conditionResultCache += array('state' => array(), 'result' => array());
+    if (empty($this->conditionResultCache['state']) || !$cacheKey = array_search($state, $this->conditionResultCache['state'], TRUE)) {
+      $cacheKey = count($this->conditionResultCache['state']);
+      $this->conditionResultCache['state'][$cacheKey] = $state;
+      $this->conditionResultCache['result'][$cacheKey] = $this->condition->evaluate($state);
+    }
+    return !empty($this->conditionResultCache['result'][$cacheKey]);
   }
 
   public function resetInternalCache() {
     parent::resetInternalCache();
     $this->condition = NULL;
+    $this->conditionResultCache = array();
   }
 }
 
