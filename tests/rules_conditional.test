@@ -515,14 +515,22 @@ class RulesConditionalWhileTestCase extends RulesConditionalBaseTestCase {
    * Tests exporting.
    */
   public function testExport() {
-    // TODO
+    $comp = $this->createTestComponent();
+    $comp->name = 'while_test';
+    $export = $this->getFileContents('while_test_export.txt');
+    $this->assertEqual($export, $comp->export(), 'While loop is correctly exported.');
   }
 
   /**
    * Tests importing.
    */
   public function testImport() {
-    // TODO
+    // Cap iteration limit to prevent long-running tests.
+    variable_set('rules_conditional_max_iterations', 100);
+
+    $export = $this->getFileContents('while_test_export.txt');
+    $comp = entity_import('rules_config', $export);
+    $this->assert($this->doTestEvaluate($comp), 'Imported while loop correctly evaluates.');
   }
 
   /**
