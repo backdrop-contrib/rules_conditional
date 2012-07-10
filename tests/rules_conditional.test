@@ -483,8 +483,8 @@ class RulesConditionalWhileTestCase extends RulesConditionalBaseTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => 'While',
-      'description' => 'Test the while plugin.',
+      'name' => 'While loop',
+      'description' => 'Test the while loop plugin.',
       'group' => 'Conditional Rules',
     );
   }
