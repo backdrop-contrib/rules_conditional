@@ -499,7 +499,7 @@ abstract class RulesConditionalPredicateElement extends RulesConditionalElement 
  * @method RulesConditional if() if($predicate, array $settings = array()) Adds an "if" statement.
  * @method RulesConditional elseIf() elseIf($predicate, array $settings = array()) Adds an "else if" statement. This is an alias for self::if().
  * @method RulesConditional else() else() Adds an "else" statement.
- * @method RulesConditional action($name, array $settings = array()) Adds an action to the currently active statement. Pass arguments as rules_action() would need.
+ * @method RulesConditional action() action($name, array $settings = array()) Adds an action to the currently active statement. Pass arguments as rules_action() would need.
  */
 class RulesConditional extends RulesConditionalContainer {
   protected $itemName = 'conditional';
@@ -638,6 +638,7 @@ class RulesConditionalElse extends RulesConditionalElement {
  *
  * @method RulesConditionalSwitch case() case($value, $fallThrough = FALSE, $valueIsSelector = FALSE) Adds a "case" statement.
  * @method RulesConditionalSwitch defaultCase() defaultCase() Adds a "default case" statement.
+ * @method RulesConditionalSwitch action() action($name, array $settings = array()) Adds an action to the currently active statement. Pass arguments as rules_action() would need.
  */
 class RulesConditionalSwitch extends RulesConditionalContainer {
   protected $itemName = 'switch';
