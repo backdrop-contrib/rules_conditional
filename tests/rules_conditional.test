@@ -299,17 +299,45 @@ class RulesConditionalTestCase extends RulesConditionalBaseTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => 'Default conditional',
+      'name' => 'Conditional',
       'description' => 'Test the if-else plugins.',
       'group' => 'Conditional Rules',
     );
   }
 
   /**
+   * Sets up test case.
+   */
+  protected function setUp() {
+    parent::setUp('rules_conditional_test');
+  }
+
+  /**
    * Tests evaluation.
    */
   public function testEvaluate() {
-    // TODO
+    // Create test objects.
+    $actionSet = rules_action_set(array('node' => array('type' => 'node', 'label' => 'Node')))
+      ->action(rules_conditional()
+        ->if('data_is', array('data:select' => 'node:title', 'value' => 'if'))
+        ->action('rules_conditional_test_throw', array('message' => 'if'))
+        ->elseIf('data_is', array('data:select' => 'node:title', 'value' => 'else if'))
+        ->action('rules_conditional_test_throw', array('message' => 'else if'))
+        ->else()
+        ->action('rules_conditional_test_throw', array('message' => 'else')));
+    $node = $this->drupalCreateNode();
+
+    // Test "if".
+    $node->title = 'if';
+    $this->assertExecution('if', $actionSet, array($node), 'Conditional evaluates "if".');
+
+    // Test "else if".
+    $node->title = 'else if';
+    $this->assertExecution('else if', $actionSet, array($node), 'Conditional evaluates "else if" (as "if").');
+
+    // Test "else".
+    $node->title = 'else';
+    $this->assertExecution('else', $actionSet, array($node), 'Conditional evaluates "else".');
   }
 
   /**
