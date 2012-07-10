@@ -401,10 +401,18 @@ class RulesConditionalSwitchTestCase extends RulesConditionalBaseTestCase {
   }
 
   /**
+   * Sets up test case.
+   */
+  protected function setUp() {
+    parent::setUp('rules_conditional_test');
+  }
+
+  /**
    * Tests evaluation.
    */
   public function testEvaluate() {
-    // TODO
+    $comp = $this->createTestComponent();
+    $this->assert($this->doTestEvaluate($comp), 'Switch correctly evaluates.');
   }
 
   /**
@@ -419,6 +427,45 @@ class RulesConditionalSwitchTestCase extends RulesConditionalBaseTestCase {
    */
   public function testImport() {
     // TODO
+  }
+
+  /**
+   * Creates an action set to test a conditional.
+   */
+  protected function createTestComponent() {
+    return rules_action_set(array('node' => array('type' => 'node', 'label' => 'Node')))
+      ->action(rules_conditional_switch('node:title')
+        ->case(array('value' => 'case 1'))
+        ->action('rules_conditional_test_throw', array('message' => 'case'))
+        ->case(array('value' => 'case 2'), TRUE)
+        ->action('data_set', array('data:select' => 'node:title', 'value' => 'fall through'))
+        ->case(array('value' => 'case 3'))
+        ->action('rules_conditional_test_throw', array('message' => 'case 3'))
+        ->defaultCase()
+        ->action('rules_conditional_test_throw', array('message' => 'default')));
+  }
+
+  /**
+   * Tests evaluating a conditional.
+   */
+  public function doTestEvaluate($comp) {
+    $node = $this->drupalCreateNode();
+    $result = TRUE;
+
+    // Test basic "case".
+    $node->title = 'case 1';
+    $result = $this->assertExecution('case', $comp, array($node)) && $result;
+
+    // Test fall-through "case".
+    $node->title = 'case 2';
+    $result = $this->assertExecution('case 3', $comp, array($node)) && $result;
+    $result = $this->assertEqual('fall through', $node->title) && $result;
+
+    // Test "default case".
+    $node->title = 'anything';
+    $result = $this->assertExecution('default', $comp, array($node)) && $result;
+
+    return $result;
   }
 }
 
