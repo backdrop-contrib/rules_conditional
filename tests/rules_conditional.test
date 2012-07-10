@@ -313,11 +313,10 @@ class RulesConditionalTestCase extends RulesConditionalBaseTestCase {
   }
 
   /**
-   * Tests evaluation.
+   * Creates an action set to test a conditional.
    */
-  public function testEvaluate() {
-    // Create test objects.
-    $actionSet = rules_action_set(array('node' => array('type' => 'node', 'label' => 'Node')))
+  protected function createTestComponent() {
+    return rules_action_set(array('node' => array('type' => 'node', 'label' => 'Node')))
       ->action(rules_conditional()
         ->if('data_is', array('data:select' => 'node:title', 'value' => 'if'))
         ->action('rules_conditional_test_throw', array('message' => 'if'))
@@ -325,19 +324,27 @@ class RulesConditionalTestCase extends RulesConditionalBaseTestCase {
         ->action('rules_conditional_test_throw', array('message' => 'else if'))
         ->else()
         ->action('rules_conditional_test_throw', array('message' => 'else')));
+  }
+
+  /**
+   * Tests evaluation.
+   */
+  public function testEvaluate() {
+    // Create test objects.
+    $comp = $this->createTestComponent();
     $node = $this->drupalCreateNode();
 
     // Test "if".
     $node->title = 'if';
-    $this->assertExecution('if', $actionSet, array($node), 'Conditional evaluates "if".');
+    $this->assertExecution('if', $comp, array($node), 'Conditional evaluates "if".');
 
     // Test "else if".
     $node->title = 'else if';
-    $this->assertExecution('else if', $actionSet, array($node), 'Conditional evaluates "else if" (as "if").');
+    $this->assertExecution('else if', $comp, array($node), 'Conditional evaluates "else if" (as "if").');
 
     // Test "else".
     $node->title = 'else';
-    $this->assertExecution('else', $actionSet, array($node), 'Conditional evaluates "else".');
+    $this->assertExecution('else', $comp, array($node), 'Conditional evaluates "else".');
   }
 
   /**
