@@ -18,7 +18,7 @@ abstract class RulesConditionalBaseTestCase extends DrupalWebTestCase {
    */
   protected function assertExecution($error, $config, array $args = array(), $message = '') {
     if (empty($message)) {
-      $message = t('Message "@error" captured by executing rule configuration.', array($error));
+      $message = t('Message "@error" captured by executing rule configuration.', array('@error' => $error));
     }
     try {
       $config->executeByArgs($args);
@@ -27,6 +27,14 @@ abstract class RulesConditionalBaseTestCase extends DrupalWebTestCase {
     catch (RulesConditionalTestException $ex) {
       return $this->assertEqual($error, $ex->getMessage(), $message);
     }
+  }
+
+  /**
+   * Retrieves a file in the test directory.
+   */
+  protected function getFileContents($fileName) {
+    $filePath = drupal_get_path('module', 'rules_conditional_test') . '/' . $fileName;
+    return file_get_contents($filePath);
   }
 }
 
@@ -361,14 +369,19 @@ class RulesConditionalTestCase extends RulesConditionalBaseTestCase {
    * Tests exporting.
    */
   public function testExport() {
-    // TODO
+    $comp = $this->createTestComponent();
+    $comp->name = 'conditional_test';
+    $export = $this->getFileContents('conditional_test_export.txt');
+    $this->assertEqual($export, $comp->export(), 'Conditional is correctly exported.');
   }
 
   /**
    * Tests importing.
    */
   public function testImport() {
-    // TODO
+    $export = $this->getFileContents('conditional_test_export.txt');
+    $comp = entity_import('rules_config', $export);
+    $this->assert($this->doTestEvaluate($comp), 'Imported conditional correctly evaluates.');
   }
 }
 
