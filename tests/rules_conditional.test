@@ -22,10 +22,10 @@ abstract class RulesConditionalBaseTestCase extends DrupalWebTestCase {
     }
     try {
       $config->executeByArgs($args);
-      $this->fail($message);
+      return $this->fail($message);
     }
     catch (RulesConditionalTestException $ex) {
-      $this->assertEqual($error, $ex->getMessage(), $message);
+      return $this->assertEqual($error, $ex->getMessage(), $message);
     }
   }
 }
@@ -332,19 +332,29 @@ class RulesConditionalTestCase extends RulesConditionalBaseTestCase {
   public function testEvaluate() {
     // Create test objects.
     $comp = $this->createTestComponent();
+    $this->assert($this->doTestEvaluate($comp), 'Conditional correctly evaluates.');
+  }
+
+  /**
+   * Tests evaluating a conditional.
+   */
+  public function doTestEvaluate($comp) {
     $node = $this->drupalCreateNode();
+    $result = TRUE;
 
     // Test "if".
     $node->title = 'if';
-    $this->assertExecution('if', $comp, array($node), 'Conditional evaluates "if".');
+    $result = $this->assertExecution('if', $comp, array($node)) && $result;
 
     // Test "else if".
     $node->title = 'else if';
-    $this->assertExecution('else if', $comp, array($node), 'Conditional evaluates "else if" (as "if").');
+    $result = $this->assertExecution('else if', $comp, array($node)) && $result;
 
     // Test "else".
     $node->title = 'else';
-    $this->assertExecution('else', $comp, array($node), 'Conditional evaluates "else".');
+    $result = $this->assertExecution('else', $comp, array($node)) && $result;
+
+    return $result;
   }
 
   /**
