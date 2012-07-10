@@ -490,10 +490,25 @@ class RulesConditionalWhileTestCase extends RulesConditionalBaseTestCase {
   }
 
   /**
+   * Sets up test case.
+   */
+  protected function setUp() {
+    parent::setUp('rules_conditional_test');
+  }
+
+  /**
    * Tests evaluation.
    */
   public function testEvaluate() {
-    // TODO
+    // Cap iteration limit to prevent long-running tests.
+    variable_set('rules_conditional_max_iterations', 100);
+
+    $comp = $this->createTestComponent();
+    $this->assert($this->doTestEvaluate($comp), 'While loop correctly evaluates.');
+
+    // Constrain iteration limit and test again.
+    variable_set('rules_conditional_max_iterations', 5);
+    $this->assert($this->doTestEvaluate($comp, 5), 'While loop correctly evaluates with limited number of iterations.');
   }
 
   /**
@@ -508,6 +523,30 @@ class RulesConditionalWhileTestCase extends RulesConditionalBaseTestCase {
    */
   public function testImport() {
     // TODO
+  }
+
+  /**
+   * Creates an action set to test a conditional.
+   */
+  protected function createTestComponent() {
+    return rules_action_set(array())
+      ->action('variable_add', array('type' => 'integer', 'value' => 0, 'variable_added:var' => 'count', 'variable_added:label' => 'Count'))
+      ->action(rules_conditional_while('data_is', array('data:select' => 'count', 'op' => '>', 'value' => 10))->negate()
+        ->action('data_set', array(
+          'data:select' => 'count',
+          'value:select' => 'count',
+          'value:process' => array(
+            'num_offset' => array('value' => 1),
+          ),
+        )))
+      ->action('rules_conditional_test_throw', array('message:select' => 'count'));
+  }
+
+  /**
+   * Tests evaluating a conditional.
+   */
+  public function doTestEvaluate($comp, $expectedCount = 11) {
+    return $this->assertExecution($expectedCount, $comp);
   }
 }
 
