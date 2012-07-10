@@ -355,7 +355,7 @@ class RulesConditionalTestCase extends RulesConditionalBaseTestCase {
   }
 
   /**
-   * Tests exporting.
+   * Tests importing.
    */
   public function testImport() {
     // TODO
@@ -392,7 +392,7 @@ class RulesConditionalSwitchTestCase extends RulesConditionalBaseTestCase {
   }
 
   /**
-   * Tests exporting.
+   * Tests importing.
    */
   public function testImport() {
     // TODO
@@ -429,7 +429,7 @@ class RulesConditionalWhileTestCase extends RulesConditionalBaseTestCase {
   }
 
   /**
-   * Tests exporting.
+   * Tests importing.
    */
   public function testImport() {
     // TODO
