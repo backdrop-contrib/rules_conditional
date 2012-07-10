@@ -357,7 +357,7 @@ abstract class RulesConditionalElement extends RulesActionContainer implements R
  */
 abstract class RulesConditionalPredicateElement extends RulesConditionalElement {
   /**
-   * @var RulesPlugin
+   * @var RulesCondition
    */
   protected $predicate;
 
@@ -437,6 +437,21 @@ abstract class RulesConditionalPredicateElement extends RulesConditionalElement 
       $modules += array_flip($this->predicate->dependencies());
     }
     return array_keys($modules);
+  }
+
+  /**
+   * Negates the predicate.
+   */
+  public function negate($negate = TRUE) {
+    $this->predicate->negate($negate);
+    return $this;
+  }
+
+  /**
+   * Returns whether the predicate is negated.
+   */
+  public function isNegated() {
+    return $this->predicate->isNegated();
   }
 
   /**
