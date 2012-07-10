@@ -658,8 +658,8 @@ class RulesConditionalSwitch extends RulesConditionalContainer {
   /**
    * Adds a "case" statement, for use with magic call.
    */
-  protected function call_case($value, $fallThrough = FALSE, $valueIsSelector = FALSE) {
-    $this->fluentElement = $element = rules_conditional_case($value, $fallThrough, $valueIsSelector);
+  protected function call_case($settings = array(), $fallThrough = FALSE) {
+    $this->fluentElement = $element = rules_conditional_case($settings, $fallThrough);
     $element->setParent($this);
     return $this;
   }
@@ -732,17 +732,15 @@ class RulesConditionalCase extends RulesConditionalElement {
    */
   protected $condition;
 
-  public function __construct($value = NULL, $fallThrough = FALSE, $valueIsSelector = FALSE) {
+  public function __construct($settings = array(), $fallThrough = FALSE) {
     parent::__construct();
-    if (isset($value)) {
-      if ($valueIsSelector) {
-        $this->settings['value:select'] = $value;
-      }
-      else {
-        $this->settings['value'] = $value;
-      }
-      $this->settings['fall_through'] = $fallThrough;
+    if (isset($settings['value'])) {
+      $this->settings['value'] = $settings['value'];
     }
+    elseif (isset($settings['value:select'])) {
+      $this->settings['value:select'] = $settings['value:select'];
+    }
+    $this->settings += array('fall_through' => $fallThrough);
   }
 
   public function forceSetUp() {
@@ -762,6 +760,8 @@ class RulesConditionalCase extends RulesConditionalElement {
         'type' => 'boolean',
         'label' => t('Fall through'),
         'description' => t('Fall through to next case when complete. If this option is checked, the next case is automatically executed (regardless of the case value) when this case is finished. If not, the switch will terminate when the case is finished.'),
+        'optional' => TRUE,
+        'default value' => FALSE,
         'restriction' => 'input',
       ),
     );
