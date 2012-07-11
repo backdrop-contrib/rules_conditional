@@ -88,12 +88,10 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
       // Build form for predicate.
       $form_state['rules_element'] = $this->predicate;
       $this->predicate->form($form, $form_state, $options);
-      $form['predicate_heading'] = array(
-        '#prefix' => '<h4 class="rules-form-heading">',
-        '#markup' => t('Condition'),
-        '#suffix' => '</h4>',
-        '#weight' => -1,
-      );
+      $heading = '<h4 class="rules-form-heading">';
+      $heading .= t('Condition');
+      $heading .= '</h4>';
+      $form['parameter']['#prefix'] = $heading;
     }
   }
 
