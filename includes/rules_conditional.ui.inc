@@ -139,6 +139,15 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
  */
 class RulesConditionalCaseUI extends RulesConditionalPluginUI {
   public function form(&$form, &$form_state, $options = array(), $iterator = NULL) {
+    // TODO Remove when http://drupal.org/node/1676998 is fixed.
+    $baseCount = count(explode('/', RulesPluginUI::$basePath));
+    $op = arg($baseCount + 2);
+    if ($op == 'add') {
+      // Redirect to extended path.
+      $pathAddPredicate = RulesPluginUI::path($this->element->root()->name, 'add-case', $this->element->parentElement(), $this->element->plugin());
+      drupal_goto($pathAddPredicate);
+    }
+
     $options['init'] = FALSE;
     parent::form($form, $form_state, $options, $iterator);
   }

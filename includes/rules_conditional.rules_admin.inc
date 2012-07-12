@@ -20,6 +20,14 @@ function _rules_conditional_rules_ui_menu_alter(&$items, $base_path, $base_count
     'file' => 'includes/rules_conditional.rules_admin.inc',
     'file path' => drupal_get_path('module', 'rules_conditional'),
   ) + $add_item;
+
+  // Add temporary fix for http://drupal.org/node/1666890.
+  // TODO Remove when http://drupal.org/node/1676998 is fixed.
+  $items[$base_path . '/manage/%rules_config/add-case/%rules_element'] = array(
+    'page arguments' => array('rules_conditional_add_case') + $add_item['page arguments'],
+    'file' => 'includes/rules_conditional.rules_admin.inc',
+    'file path' => drupal_get_path('module', 'rules_conditional'),
+  ) + $add_item;
 }
 
 /**
@@ -64,5 +72,33 @@ function rules_conditional_add_predicate($form, &$form_state, $rules_config, $pl
   else {
     $form['#submit'][] = 'rules_ui_add_element_submit';
   }
+  return $form;
+}
+
+/**
+ * Provides a variant of rules_ui_add_element() to create a case.
+ * @todo Remove when http://drupal.org/node/1676998 is fixed.
+ */
+function rules_conditional_add_case($form, &$form_state, $rules_config, $plugin_name, RulesContainerPlugin $parent, $base_path) {
+  // Build condition form.
+  RulesPluginUI::$basePath = $base_path;
+  if (!isset($form_state['rules_element'])) {
+    RulesPluginUI::formDefaults($form, $form_state);
+    $form_state += array('parent_element' => $parent, 'plugin' => $plugin_name);
+
+    $element = rules_plugin_factory($plugin_name);
+    // Always add the new element at the bottom, thus set an appropriate weight.
+    $iterator = $parent->getIterator();
+    if ($sibling = end($iterator)) {
+      $element->weight = $sibling->weight + 1;
+    }
+    $element->setParent($parent);
+    $form_state['rules_element'] = $element;
+  }
+
+  // Build element form.
+  $form_state['rules_element']->form($form, $form_state, array('button' => TRUE, 'init' => TRUE));
+  $form['#validate'][] = 'rules_ui_edit_element_validate';
+  $form['#submit'][] = 'rules_ui_edit_element_submit';
   return $form;
 }
