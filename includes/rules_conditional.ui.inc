@@ -88,12 +88,10 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
       // Build form for predicate.
       $form_state['rules_element'] = $this->predicate;
       $this->predicate->form($form, $form_state, $options);
-      $form['predicate_heading'] = array(
-        '#prefix' => '<h4 class="rules-form-heading">',
-        '#markup' => t('Condition'),
-        '#suffix' => '</h4>',
-        '#weight' => -1,
-      );
+      $heading = '<h4 class="rules-form-heading">';
+      $heading .= t('Condition');
+      $heading .= '</h4>';
+      $form['parameter']['#prefix'] = $heading;
     }
   }
 
@@ -201,15 +199,22 @@ class RulesConditionalWhileUI extends RulesConditionalPredicateUI {
   public function form(&$form, &$form_state, $options = array()) {
     parent::form($form, $form_state, $options);
 
+    // Display help for while loop.
+    $form['while_help'] = array(
+      '#weight' => -5,
+    );
+    $form['while_help']['text'] = array(
+      '#prefix' => '<p>',
+      '#markup' => t('Configure the condition for this while loop to continue. This loop will not end until the condition evaluates to false, or the maximum limit on the number of iterations has been reached.'),
+      '#suffix' => '</p>',
+    );
+
     // Display help to change iteration limit.
     $maxIterations = variable_get('rules_conditional_max_iterations', RULES_CONDITIONAL_MAX_ITERATIONS);
-    $help = '<p>' . t('Configure the condition for this while loop to continue. This loop will not end until the condition evaluates to false, or the maximum limit on the number of iterations has been reached.') . '</p>';
-    $help .= '<div class="description">';
-    $help .= '<p>' . t('The current limit is @limit. Note that this cannot be changed in the user interface. Although it can be changed by setting the %variable variable to another value, raising this limit must be done with care since Rules evaluation can be resource-intensive.', array('@limit' => $maxIterations, '%variable' => 'rules_conditional_max_iterations')) . '</p>';
-    $help .= '</div>';
-    $form['while_help'] = array(
-      '#markup' => $help,
-      '#weight' => -5,
+    $form['while_help']['description'] = array(
+      '#prefix' => '<div class="description"><p>',
+      '#markup' => t('The current limit is @limit. Note that this cannot be changed in the user interface. Although it can be changed by setting the %variable variable to another value, raising this limit must be done with care since Rules evaluation can be resource-intensive.', array('@limit' => $maxIterations, '%variable' => 'rules_conditional_max_iterations')),
+      '#suffix' => '</p></div>',
     );
   }
 }
