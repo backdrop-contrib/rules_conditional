@@ -185,7 +185,7 @@ class RulesConditionalCaseUI extends RulesConditionalPluginUI {
       if ($wrapper = $this->element->applyDataSelector($dataSelector)) {
         $dataInfo = $wrapper->info();
         if (!empty($dataInfo['options list'])) {
-          return call_user_func($dataInfo['options list'], $this->element, 'value');
+          return $wrapper->optionsList('view');
         }
       }
     }
