@@ -154,6 +154,13 @@ abstract class RulesConditionalContainer extends RulesContainerPlugin implements
    */
   abstract protected function selectBranches(RulesState $state);
 
+  /**
+   * Deletes the container and its children.
+   */
+  public function delete($keep_children = FALSE) {
+    parent::delete($keep_children);
+  }
+
   public function dependencies() {
     $modules = array('rules_conditional' => 1);
     $modules += array_flip(parent::dependencies());
@@ -326,6 +333,13 @@ abstract class RulesConditionalElement extends RulesActionContainer implements R
       }
       while (($previous && $previous = $previous->getPreviousSibling()) || ($next && $next = $next->getNextSibling()));
     }
+  }
+
+  /**
+   * Deletes the element and its children.
+   */
+  public function delete($keep_children = FALSE) {
+    parent::delete($keep_children);
   }
 
   public function dependencies() {
@@ -923,5 +937,12 @@ class RulesConditionalWhile extends RulesConditionalPredicateElement {
         }
       }
     }
+  }
+
+  /**
+   * Deletes the element and its children.
+   */
+  public function delete($keep_children = TRUE) {
+    parent::delete($keep_children);
   }
 }
