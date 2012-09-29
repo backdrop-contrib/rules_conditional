@@ -30,7 +30,7 @@ abstract class RulesConditionalContainer extends RulesContainerPlugin implements
   /**
    * Intercepts calls to magic methods, possibly using reserved keywords.
    */
-  public function __call($name, $arguments) {
+  public function __call($name, $arguments = array()) {
     if (in_array($name, $this->interceptMethods) && method_exists($this, $mapMethod = 'call_' . $name)) {
       return call_user_func_array(array($this, $mapMethod), $arguments);
     }
