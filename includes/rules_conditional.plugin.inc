@@ -4,6 +4,12 @@
  * Rules plugin implementation.
  */
 
+// Load new file to avoid registry rebuild problems.
+// TODO Remove this after a while.
+if (!class_exists('RulesConditionalContainer')) {
+  module_load_include('inc', 'rules_conditional', 'includes/rules_conditional.core');
+}
+
 /**
  * Default if-else conditional statement.
  *
