@@ -559,6 +559,97 @@ class RulesConditionalWhileTestCase extends RulesConditionalBaseTestCase {
 }
 
 /**
+ * Rule condition set tests.
+ */
+class RuleConditionSetTestCase extends RulesConditionalBaseTestCase {
+  /**
+   * Returns test info.
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Rule condition set',
+      'description' => 'Test the rule condition set plugin.',
+      'group' => 'Conditional Rules',
+    );
+  }
+
+  /**
+   * Sets up test case.
+   */
+  protected function setUp() {
+    parent::setUp('rules_conditional_test');
+  }
+
+  /**
+   * Tests evaluation.
+   */
+  public function testEvaluate() {
+    $set = $this->createConditionSet();
+    $this->assert($this->doTestEvaluate($set), 'Rule condition set correctly evaluates.');
+
+    // Test evaluating in a component.
+    $set->save('rule_condition_set_test');
+    $comp = $this->createTestComponent($set);
+    $comp->execute('test');
+    $this->pass('Rule condition set evaluates to FALSE as a condition.');
+    $this->assertExecution('condition set', $comp, array('condition set'), 'Rule condition set evaluates to TRUE as a condition.');
+  }
+
+  /**
+   * Tests exporting.
+   */
+  public function testExport() {
+    $comp = $this->createConditionSet();
+    $comp->name = 'rule_condition_set_test';
+    $export = $this->getFileContents('rule_condition_set_test_export.txt');
+    $this->assertEqual($export, $comp->export(), 'Rule condition set is correctly exported.');
+  }
+
+  /**
+   * Tests importing.
+   */
+  public function testImport() {
+    $export = $this->getFileContents('rule_condition_set_test_export.txt');
+    $comp = entity_import('rules_config', $export);
+    $this->assert($this->doTestEvaluate($comp), 'Imported rule condition set correctly evaluates.');
+  }
+
+  /**
+   * Creates a rule condition set.
+   */
+  protected function createConditionSet() {
+    $conditionVariables = array(
+      'test' => array('type' => 'text', 'label' => 'Test'),
+    );
+    $set = rule_condition_set($conditionVariables)
+      ->action('variable_add', array('type' => 'text', 'variable_added:var' => 'test2', 'variable_added:label' => 'Test 2'))
+      ->action('data_set', array('data:select' => 'test2', 'value:select' => 'test'))
+      ->condition('data_is', array('data:select' => 'test2', 'value' => 'condition set'));
+    $set->component = TRUE;
+    return $set;
+  }
+
+  /**
+   * Creates an action set to test a rule condition set.
+   */
+  protected function createTestComponent(RuleConditionSet $conditionSet) {
+    return rule(array('test' => array('type' => 'text', 'label' => 'Text')))
+      ->condition('component_' . $conditionSet->name, array('test:select' => 'test'))
+      ->action('rules_conditional_test_throw', array('message' => 'condition set'));
+  }
+
+  /**
+   * Tests evaluating a rule condition set.
+   */
+  public function doTestEvaluate(RulesPlugin $comp) {
+    $result = TRUE;
+    $result = $this->assertTrue($comp->execute('condition set')) && $result;
+    $result = $this->assertFalse($comp->execute('wrong value')) && $result;
+    return $result;
+  }
+}
+
+/**
  * UI tests.
  */
 class RulesConditionalUITestCase extends RulesConditionalBaseTestCase {
