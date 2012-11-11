@@ -84,5 +84,16 @@ function rules_conditional_rules_plugin_info() {
         ),
       ),
     ),
+    'rule condition set' => array(
+      'label' => t('Condition set (rule)', array(), array('context' => 'conditional rules')),
+      'class' => 'RuleConditionSet',
+      'embeddable' => FALSE,
+      'component' => TRUE,
+      'extenders' => array(
+        'RulesPluginUIInterface' => array(
+          'class' => 'RuleConditionSetUI',
+        ),
+      ),
+    ),
   );
 }

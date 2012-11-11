@@ -218,3 +218,58 @@ class RulesConditionalWhileUI extends RulesConditionalPredicateUI {
     );
   }
 }
+
+/**
+ * UI for rule condition set.
+ *
+ * This UI is adapted from RulesRuleUI by swapping conditions for actions.
+ */
+class RuleConditionSetUI extends RulesConditionContainerUI {
+  /** @var RulesActionContainer */
+  protected $actions;
+  /** @var RuleConditionSet */
+  protected $set;
+
+  public function __construct(FacesExtendable $object) {
+    parent::__construct($object);
+    $this->set = $object;
+    /** @var RuleConditionSet $object  */
+    $this->actions = $object->actionContainer();
+  }
+
+  public function form(&$form, &$form_state, $options = array()) {
+    $form_state['rules_element'] = $this->set;
+
+    $form += array('actions' => array('#weight' => -5, '#tree' => TRUE));
+    $this->actions->form($form['actions'], $form_state);
+
+    // Add condition result form.
+    $iterator = new RecursiveIteratorIterator($this->set->conditions(), RecursiveIteratorIterator::SELF_FIRST);
+    parent::form($form, $form_state, $options, $iterator);
+    $form['elements']['#caption'] = t('Result conditions');
+    $form['negate']['#weight'] = 1;
+    // Hide nested elements during creation.
+    $form['elements']['#access'] = empty($options['init']);
+    $form['actions']['elements']['#access'] = empty($options['init']);
+
+    $form['help']['#markup'] = t('A rule condition set evaluates the actions first. Variables provided by the actions then can be used to evaluate the result conditions (as an "AND", i.e. evaluating to TRUE if conditions are empty).');
+    $form['help']['#weight'] = -5;
+
+    $form_state['redirect'] = RulesPluginUI::path($this->element->root()->name);
+    if (!empty($options['button'])) {
+      $form['submit']['#value'] = t('Save changes');
+    }
+  }
+
+  /**
+   * Applies the values of the form to the rule configuration.
+   */
+  function form_extract_values($form, &$form_state) {
+    // Extract action container values.
+    if (isset($form['actions'])) {
+      $this->actions->extender('RulesActionContainerUI')->form_extract_values($form['actions'], $form_state);
+    }
+    // Extract condition container values.
+    parent::form_extract_values($form, $form_state);
+  }
+}

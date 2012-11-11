@@ -434,3 +434,147 @@ class RulesConditionalWhile extends RulesConditionalPredicateElement {
     parent::delete($keep_children);
   }
 }
+
+/**
+ * Rule as condition set.
+ *
+ * A rule condition set evaluates a set of actions before evaluating the result
+ * condition on the new state.
+ */
+class RuleConditionSet extends RulesAnd {
+  protected $itemName = 'rule condition set';
+
+  /** @var RulesActionSet */
+  protected $actions = NULL;
+
+  public function __construct($variables = array()) {
+    parent::__construct($variables);
+
+    if (!isset($this->actions)) {
+      $this->actions = rules_action_set();
+      $this->actions->parent = $this;
+    }
+  }
+
+  public function __sleep() {
+    return parent::__sleep() + drupal_map_assoc(array('actions'));
+  }
+
+  /**
+   * Get an iterator over all contained actions.
+   * @return RulesRecursiveElementIterator
+   */
+  public function actions() {
+    return $this->actions->getIterator();
+  }
+
+  /**
+   * Returns the contained action set to evaluate the result for.
+   */
+  public function actionContainer() {
+    return $this->actions;
+  }
+
+  /**
+   * Adds an action to the rule condition. Pass either an instance of the
+   * RulesActionInterface or the arguments as needed by rules_action().
+   *
+   * This method can be chained.
+   */
+  public function action($name, $settings = array()) {
+    $this->actions->action($name, $settings);
+    return $this;
+  }
+
+  /**
+   * Returns a recursive iterator for result conditions.
+   * @return RulesRecursiveElementIterator
+   */
+  public function conditions() {
+    return parent::getIterator();
+  }
+
+  public function evaluate(RulesState $state) {
+    rules_log('Evaluating actions of rule condition set %label.', array('%label' => $this->label()), RulesLog::INFO, $this);
+    $this->actions->evaluate($state);
+    rules_log('Evaluating result conditions of rule condition set %label.', array('%label' => $this->label()), RulesLog::INFO, $this);
+    return parent::evaluate($state);
+  }
+
+  public function integrityCheck() {
+    parent::integrityCheck();
+    $this->actions->integrityCheck();
+    return $this;
+  }
+
+  public function access() {
+    return $this->actions->access() && parent::access();
+  }
+
+  public function dependencies() {
+    $modules = array('rules_conditional' => 1);
+    $modules += array_flip($this->actions->dependencies());
+    $modules += array_flip(parent::dependencies());
+    return array_keys($modules);
+  }
+
+  public function destroy() {
+    $this->actions->destroy();
+    parent::destroy();
+  }
+
+  /**
+   * @return RulesRecursiveElementIterator
+   */
+  public function getIterator() {
+    $array = array_merge(array($this->actions), $this->children);
+    return new RulesRecursiveElementIterator($array);
+  }
+
+  protected function stateVariables($element = NULL) {
+    $vars = $this->availableVariables();
+    if (isset($element) && $element !== $this->actions) {
+      // Provide action variables for conditions.
+      foreach ($this->actions->children as $child) {
+        $vars += $child->providesVariables();
+      }
+      // Provide condition state variables.
+      $vars += parent::stateVariables($element);
+    }
+    return $vars;
+  }
+
+  protected function exportChildren($key = NULL) {
+    $export = array();
+    if ($this->actions->children) {
+      $export += $this->actions->exportChildren('DO');
+    }
+    $export += parent::exportChildren('RESULT');
+    return $export;
+  }
+
+  protected function importChildren($export, $key = NULL) {
+    if (!empty($export['DO'])) {
+      $this->actions->importChildren($export, 'DO');
+    }
+    parent::importChildren($export, 'RESULT');
+  }
+
+  public function __clone() {
+    parent::__clone();
+    $this->actions = clone $this->actions;
+    $this->actions->parent = $this;
+  }
+
+  /**
+   * Deletes nested elements by default.
+   */
+  public function delete($keep_children = FALSE) {
+    parent::delete($keep_children);
+  }
+
+  public function resetInternalCache() {
+    parent::resetInternalCache();
+    $this->actions->resetInternalCache();
+  }
+}
