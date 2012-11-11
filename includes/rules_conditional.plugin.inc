@@ -539,7 +539,16 @@ class RuleConditionSet extends RulesAnd {
         $vars += $child->providesVariables();
       }
       // Provide condition state variables.
-      $vars += parent::stateVariables($element);
+      foreach ($this->children as $child) {
+        if ($child === $element) {
+          break;
+        }
+        $vars += $child->providesVariables();
+        // Assert variable info from child conditions.
+        if (!$child->isNegated() && ($assertions = $child->variableInfoAssertions())) {
+          $vars = RulesData::addMetadataAssertions($vars, $assertions);
+        }
+      }
     }
     return $vars;
   }
