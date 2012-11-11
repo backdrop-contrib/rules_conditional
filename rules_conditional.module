@@ -65,3 +65,10 @@ function rules_conditional_default_case() {
 function rules_conditional_while($predicate, array $settings = array()) {
   return new RulesConditionalWhile($predicate, $settings);
 }
+
+/**
+ * Creates a rule condition set.
+ */
+function rule_condition_set(array $variables = array()) {
+  return new RuleConditionSet($variables);
+}
