@@ -278,6 +278,25 @@ abstract class RulesConditionalElement extends RulesActionContainer implements R
   }
 
   /**
+   * Gets sibling elements.
+   *
+   * @return array of RulesPlugin objects.
+   */
+  public function getAllSibling() {
+    if (isset($this->parent)) {
+      $siblings = NULL;
+      foreach ($this->parent->getIterator() as $element) {
+        if (!($element === $this)) {
+          $siblings[] = $element;
+        }
+      }
+      return $siblings;
+    }
+    // Otherwise, return nothing if no sibling.
+    return NULL;
+  }
+
+  /**
    * Gets the next sibling element.
    *
    * @return RulesPlugin
