@@ -264,7 +264,7 @@ abstract class RulesConditionalElement extends RulesActionContainer implements R
    * @return RulesPlugin
    */
   public function getPreviousSibling() {
-    if (isset($this->parent)) {
+    if (isset($this->parent) && method_exists($this->parent, 'getIterator')) {
       $previous = NULL;
       foreach ($this->parent->getIterator() as $element) {
         if ($element === $this) {
