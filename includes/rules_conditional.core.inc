@@ -430,6 +430,12 @@ abstract class RulesConditionalPredicateElement extends RulesConditionalElement 
     return $array;
   }
 
+  public function __clone() {
+    parent::__clone();
+    $this->predicate = clone $this->predicate;
+    $this->predicate->parent = $this;
+  }
+
   public function label() {
     $text = '@plugin';
     $variables = array('@plugin' => $this->pluginLabel());
