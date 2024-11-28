@@ -430,7 +430,7 @@ class RulesConditionalWhile extends RulesConditionalPredicateElement {
 
   public function evaluate(RulesState $state) {
     $iteration = 0;
-    $maxIterations = variable_get('rules_conditional_max_iterations', RULES_CONDITIONAL_MAX_ITERATIONS);
+    $maxIterations = config_get('rules_conditional_max_iterations');
     while ($iteration < $maxIterations && $this->canEvaluate($state)) {
       // Use a separate state so variables are available in the loop only.
       $clonedState = clone $state;
@@ -476,7 +476,7 @@ class RuleConditionSet extends RulesAnd {
   }
 
   public function __sleep() {
-    return parent::__sleep() + drupal_map_assoc(array('actions'));
+    return parent::__sleep() + backdrop_map_assoc(array('actions'));
   }
 
   /**

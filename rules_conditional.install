@@ -5,8 +5,11 @@
  */
 
 /**
- * Implements hook_uninstall().
+ * Move variable to config.
  */
-function rules_conditional_uninstall() {
-  variable_del('rules_conditional_max_iterations');
+function rules_conditional_update_1000() {
+  $config = config('rules_conditional.settings');
+  $config->set('rules_conditional_max_iterations', update_variable_get('rules_conditional_max_iterations', 65535));
+  $config->save();
+  update_variable_del('rules_conditional_max_iterations');
 }

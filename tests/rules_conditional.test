@@ -33,7 +33,7 @@ abstract class RulesConditionalBaseTestCase extends DrupalWebTestCase {
    * Retrieves a file in the test directory.
    */
   protected function getFileContents($fileName) {
-    $filePath = drupal_get_path('module', 'rules_conditional_test') . '/' . $fileName;
+    $filePath = backdrop_get_path('module', 'rules_conditional_test') . '/' . $fileName;
     return file_get_contents($filePath);
   }
 }
@@ -94,10 +94,10 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
   public function testFluentInterface() {
     $container = new RulesConditionalTestStubContainer();
     $actions1 = new RulesActionSet();
-    $container->fluent($actions1)->action('drupal_message', array('message' => '[site:name]'));
+    $container->fluent($actions1)->action('backdrop_message', array('message' => '[site:name]'));
     $this->assertEqual(1, count($actions1->elements()), 'Fluent interface adds action to the active element.');
     $actions2 = new RulesActionSet();
-    $container->fluent($actions2)->action('drupal_message', array('message' => '[site:name]'));
+    $container->fluent($actions2)->action('backdrop_message', array('message' => '[site:name]'));
     $this->assertEqual(1, count($actions1->elements()), 'Fluent interface does not add action to a previously active element.');
   }
 
@@ -501,13 +501,13 @@ class RulesConditionalWhileTestCase extends RulesConditionalBaseTestCase {
    */
   public function testEvaluate() {
     // Cap iteration limit to prevent long-running tests.
-    variable_set('rules_conditional_max_iterations', 100);
+    config_set('rules_conditional.settings', 'rules_conditional_max_iterations', 100);
 
     $comp = $this->createTestComponent();
     $this->assert($this->doTestEvaluate($comp), 'While loop correctly evaluates.');
 
     // Constrain iteration limit and test again.
-    variable_set('rules_conditional_max_iterations', 5);
+    config_set('rules_conditional.settings', 'rules_conditional_max_iterations', 5);
     $this->assert($this->doTestEvaluate($comp, 5), 'While loop correctly evaluates with limited number of iterations.');
   }
 
@@ -526,7 +526,7 @@ class RulesConditionalWhileTestCase extends RulesConditionalBaseTestCase {
    */
   public function testImport() {
     // Cap iteration limit to prevent long-running tests.
-    variable_set('rules_conditional_max_iterations', 100);
+    config_set('rules_conditional.settings', 'rules_conditional_max_iterations', 100);
 
     $export = $this->getFileContents('while_test_export.txt');
     $comp = entity_import('rules_config', $export);

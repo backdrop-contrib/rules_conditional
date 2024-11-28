@@ -83,3 +83,36 @@ function rules_conditional_module_implements_alter(&$implementations, $hook) {
     $implementations['rules_conditional'] = $group;
   }
 }
+
+/**
+ * Implements hook_autoload_info().
+ */
+function rules_conditional_autoload_info() {
+  return array(
+    'RulesConditionalPluginUI' => 'includes/rules_conditional.ui.inc',
+    'RulesConditionalEmptyUI' => 'includes/rules_conditional.ui.inc',
+    'RulesConditionalPredicateUI' => 'includes/rules_conditional.ui.inc',
+    'RulesConditionalCaseUI' => 'includes/rules_conditional.ui.inc',
+    'RulesConditionalWhileUI' => 'includes/rules_conditional.ui.inc',
+    'RuleConditionSetUI' => 'includes/rules_conditional.ui.inc',
+    'RulesConditional' => 'includes/rules_conditional.plugin.inc',
+    'RulesConditionalIf' => 'includes/rules_conditional.plugin.inc',
+    'RulesConditionalElse' => 'includes/rules_conditional.plugin.inc',
+    'RulesConditionalSwitch' => 'includes/rules_conditional.plugin.inc',
+    'RulesConditionalCase' => 'includes/rules_conditional.plugin.inc',
+    'RulesConditionalDefaultCase' => 'includes/rules_conditional.plugin.inc',
+    'RulesConditionalWhile' => 'includes/rules_conditional.plugin.inc',
+    'RuleConditionSet' => 'includes/rules_conditional.plugin.inc',
+  );
+}
+
+/**
+ * Implements hook_config_info().
+ */
+function rules_conditional_config_info() {
+  $prefixes['rules_conditional.settings'] = array(
+    'label' => t('Conditional Rules settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}

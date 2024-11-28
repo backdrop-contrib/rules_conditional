@@ -42,7 +42,7 @@ class RulesConditionalEmptyUI extends RulesConditionalPluginUI {
     $this->element->save();
     // Redirect right away.
     $path = RulesPluginUI::defaultRedirect($this->element);
-    drupal_goto($path);
+    backdrop_goto($path);
   }
 
   public function operations() {
@@ -81,7 +81,7 @@ class RulesConditionalPredicateUI extends RulesContainerPluginUI {
     if ($op == 'add') {
       // Redirect to extended path.
       $pathAddPredicate = RulesPluginUI::path($this->element->root()->name, 'add-predicate', $this->element->parentElement(), $this->element->plugin());
-      drupal_goto($pathAddPredicate);
+      backdrop_goto($pathAddPredicate);
     }
 
     if (isset($this->predicate)) {
@@ -143,7 +143,7 @@ class RulesConditionalCaseUI extends RulesConditionalPluginUI {
     if ($op == 'add') {
       // Redirect to extended path.
       $pathAddPredicate = RulesPluginUI::path($this->element->root()->name, 'add-case', $this->element->parentElement(), $this->element->plugin());
-      drupal_goto($pathAddPredicate);
+      backdrop_goto($pathAddPredicate);
     }
 
     $options['init'] = FALSE;
@@ -210,7 +210,7 @@ class RulesConditionalWhileUI extends RulesConditionalPredicateUI {
     );
 
     // Display help to change iteration limit.
-    $maxIterations = variable_get('rules_conditional_max_iterations', RULES_CONDITIONAL_MAX_ITERATIONS);
+    $maxIterations = config_get('rules_conditional_max_iterations');
     $form['while_help']['description'] = array(
       '#prefix' => '<div class="description"><p>',
       '#markup' => t('The current limit is @limit. Note that this cannot be changed in the user interface. Although it can be changed by setting the %variable variable to another value, raising this limit must be done with care since Rules evaluation can be resource-intensive.', array('@limit' => $maxIterations, '%variable' => 'rules_conditional_max_iterations')),

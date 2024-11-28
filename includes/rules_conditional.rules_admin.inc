@@ -18,7 +18,7 @@ function _rules_conditional_rules_ui_menu_alter(&$items, $base_path, $base_count
   $items[$base_path . '/manage/%rules_config/add-predicate/%rules_element'] = array(
     'page arguments' => array('rules_conditional_add_predicate') + $add_item['page arguments'],
     'file' => 'includes/rules_conditional.rules_admin.inc',
-    'file path' => drupal_get_path('module', 'rules_conditional'),
+    'file path' => backdrop_get_path('module', 'rules_conditional'),
   ) + $add_item;
 
   // Add temporary fix for http://drupal.org/node/1666890.
@@ -26,7 +26,7 @@ function _rules_conditional_rules_ui_menu_alter(&$items, $base_path, $base_count
   $items[$base_path . '/manage/%rules_config/add-case/%rules_element'] = array(
     'page arguments' => array('rules_conditional_add_case') + $add_item['page arguments'],
     'file' => 'includes/rules_conditional.rules_admin.inc',
-    'file path' => drupal_get_path('module', 'rules_conditional'),
+    'file path' => backdrop_get_path('module', 'rules_conditional'),
   ) + $add_item;
 }
 
@@ -37,7 +37,7 @@ function _rules_conditional_rules_ui_menu_alter(&$items, $base_path, $base_count
 function rules_conditional_add_predicate($form, &$form_state, $rules_config, $plugin_name, RulesContainerPlugin $parent, $base_path) {
   $cache = rules_get_cache();
   if (!isset($cache['plugin_info'][$plugin_name]['class'])) {
-    drupal_not_found();
+    backdrop_not_found();
     exit;
   }
 
