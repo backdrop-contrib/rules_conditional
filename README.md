@@ -4,11 +4,11 @@ This module provides Rules plugins for conditionally altering execution flow
 directly inside a group of actions. Provided plugins include:
 
 - Conditional
--- If/(Else) If
--- Else
+  - If/(Else) If
+  - Else
 - Switch
--- Case
--- Default case
+  - Case
+  - Default case
 - While
 
 Using these plugins, rules with relatively easy-to-read flows can be built without
