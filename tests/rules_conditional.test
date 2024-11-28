@@ -92,15 +92,13 @@ class RulesConditionalFrameworkTestCase extends RulesConditionalBaseTestCase {
    * Tests fluent interface.
    */
   public function testFluentInterface() {
-    /* @todo broken
     $container = new RulesConditionalTestStubContainer();
     $actions1 = new RulesActionSet();
     $container->fluent($actions1)->action('backdrop_message', array('message' => '[site:name]'));
-    $this->assertEqual(1, count($actions1->elements()), 'Fluent interface adds action to the active element.');
+    $this->assertEqual(1, count((array) $actions1->elements()), 'Fluent interface adds action to the active element.');
     $actions2 = new RulesActionSet();
     $container->fluent($actions2)->action('backdrop_message', array('message' => '[site:name]'));
-    $this->assertEqual(1, count($actions1->elements()), 'Fluent interface does not add action to a previously active element.');
-    */
+    $this->assertEqual(1, count((array) $actions1->elements()), 'Fluent interface does not add action to a previously active element.');
   }
 
   /**
