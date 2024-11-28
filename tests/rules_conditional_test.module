@@ -103,3 +103,17 @@ function rules_conditional_test_throw($message) {
  * Test exception.
  */
 class RulesConditionalTestException extends Exception {}
+
+/**
+ * Implements hook_autoload_info().
+ */
+function rules_conditional_test_autoload_info() {
+  return array(
+    'RulesConditionalTestStubContainer' => 'rules_conditional_test.inc',
+    'RulesConditionalTestStubElement' => 'rules_conditional_test.inc',
+    'RulesConditionalTestStubDefaultElement' => 'rules_conditional_test.inc',
+    'RulesConditionalTestStubPredicateElement' => 'rules_conditional_test.inc',
+    'RulesConditionalTestStubSingleElement' => 'rules_conditional_test.inc',
+    'RulesConditionalTestStubDependentElement' => 'rules_conditional_test.inc',
+  );
+}

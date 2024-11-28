@@ -88,7 +88,7 @@ function rules_conditional_add_case($form, &$form_state, $rules_config, $plugin_
 
     $element = rules_plugin_factory($plugin_name);
     // Always add the new element at the bottom, thus set an appropriate weight.
-    $iterator = $parent->getIterator();
+    $iterator = (array) $parent->getIterator();
     if ($sibling = end($iterator)) {
       $element->weight = $sibling->weight + 1;
     }

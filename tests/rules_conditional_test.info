@@ -1,7 +1,8 @@
 name = Conditional Rules Test
-core = 7.x
+type = module
+backdrop = 1.x
 dependencies[] = rules
 dependencies[] = rules_conditional
-files[] = rules_conditional_test.inc
+dependencies[] = entity_plus
 package = Rules
 hidden = TRUE

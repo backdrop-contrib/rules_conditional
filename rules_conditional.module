@@ -89,6 +89,7 @@ function rules_conditional_module_implements_alter(&$implementations, $hook) {
  */
 function rules_conditional_autoload_info() {
   return array(
+    'RulesConditionalContainer' => 'includes/rules_conditional.core.inc',
     'RulesConditionalPluginUI' => 'includes/rules_conditional.ui.inc',
     'RulesConditionalEmptyUI' => 'includes/rules_conditional.ui.inc',
     'RulesConditionalPredicateUI' => 'includes/rules_conditional.ui.inc',

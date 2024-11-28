@@ -1,0 +1,35 @@
+[RulesConditionalFrameworkTestCase]
+name = Framework
+description = Test the core conditional plugin framework.
+group = Conditional Rules
+file = rules_conditional.test
+
+[RulesConditionalTestCase]
+name = Conditional
+description = Test the if-else plugins.
+group = Conditional Rules
+file = rules_conditional.test
+
+[RulesConditionalSwitchTestCase]
+name = Switch
+description = Test the switch plugins.
+group = Conditional Rules
+file = rules_conditional.test
+
+[RulesConditionalWhileTestCase]
+name = While loop
+description = Test the while loop plugin.
+group = Conditional Rules
+file = rules_conditional.test
+
+[RuleConditionSetTestCase]
+name = Rule condition set
+description = Test the rule condition set plugin.
+group = Conditional Rules
+file = rules_conditional.test
+
+[RulesConditionalUITestCase]
+name = User interface
+description = Test the user interface implementations for conditional plugins.
+group = Conditional Rules
+file = rules_conditional.test
