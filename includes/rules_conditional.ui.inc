@@ -210,7 +210,7 @@ class RulesConditionalWhileUI extends RulesConditionalPredicateUI {
     );
 
     // Display help to change iteration limit.
-    $maxIterations = config_get('rules_conditional_max_iterations');
+    $maxIterations = config_get('rules_conditional.settings', 'rules_conditional_max_iterations');
     $form['while_help']['description'] = array(
       '#prefix' => '<div class="description"><p>',
       '#markup' => t('The current limit is @limit. Note that this cannot be changed in the user interface. Although it can be changed by setting the %variable variable to another value, raising this limit must be done with care since Rules evaluation can be resource-intensive.', array('@limit' => $maxIterations, '%variable' => 'rules_conditional_max_iterations')),

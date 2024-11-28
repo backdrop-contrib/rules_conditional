@@ -424,7 +424,7 @@ class RulesConditionalWhile extends RulesConditionalPredicateElement {
 
   public function evaluate(RulesState $state) {
     $iteration = 0;
-    $maxIterations = config_get('rules_conditional_max_iterations');
+    $maxIterations = config_get('rules_conditional.settings', 'rules_conditional_max_iterations');
     while ($iteration < $maxIterations && $this->canEvaluate($state)) {
       // Use a separate state so variables are available in the loop only.
       $clonedState = clone $state;
