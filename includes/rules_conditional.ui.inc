@@ -26,7 +26,7 @@ class RulesConditionalPluginUI extends RulesContainerPluginUI {
       }
       // Remove link.
       if ($remove) {
-        unset($ops['#links']['add_' . $plugin]);
+        unset($ops['data']['#links']['add_' . $plugin]);
       }
     }
     return $ops;
